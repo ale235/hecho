@@ -54,7 +54,7 @@
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <small class="bg-red">Online</small>
-                            <span class="hidden-xs">Alejandro Colautti</span>
+                            <span class="hidden-xs">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -114,6 +114,7 @@
                     <ul class="treeview-menu">
                         <li><a href="{{ url('ventas/cliente') }}">Clientes</a></li>
                         <li><a href="{{ url('ventas/venta?daterange') }}">Venta</a></li>
+                        <li><a href="{{ url('ventas/venta/create') }}">Facturación</a></li>
                     </ul>
                 </li>
                 @if (Auth::user()->role == 1)

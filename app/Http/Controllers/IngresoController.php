@@ -230,7 +230,9 @@ class IngresoController extends Controller
         $articulo = DB::table('articulo as art')
             ->select('art.nombre','p.idpersona','art.idarticulo')
             ->join('persona as p','p.codigo','=','art.proveedor')
-            ->where('art.codigo','=',$request->codigo)->first();
+            ->where('art.codigo','=',$request->codigo)
+            ->orwhere('art.barcode','=',$request->codigo)
+            ->first();
 
 //        $precio= DB::table('precio')
 //            ->where('idarticulo','=',$articulo->idarticulo)

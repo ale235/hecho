@@ -186,7 +186,7 @@ class ReportesController extends Controller
                 ->orderBy('fecha_hora','desc')
 //            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
 //                ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])
-                ->get();
+                ->paginate(30);
         }else{
             $date = $request->get('daterange');
             $pieces = explode(" - ", $date);
@@ -195,22 +195,21 @@ class ReportesController extends Controller
 //            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
                 ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])
                 ->orderBy('fecha_hora','desc')
-                ->get();
+                ->paginate(30);
         }
 //        var_dump($request->get('daterange'));
 
 
-        $query3 = trim($request->get('searchText'));
+        $query = trim($request->get('searchText'));
         $stock = DB::table('articulo')
+            ->where('stock','<=','0')
+            ->where('codigo','LIKE','%'.$query.'%')
             ->where('estado','=','Activo')
-            ->where('nombre','LIKE','%'.$query3.'%')
-            ->orderBy('idarticulo','desc')
-            ->get();
+            ->paginate(30);
 
 
         if($request->is('reportes/grafico/detallestock'))
-
-        return view('reportes.grafico.detallestock', ['stock'=> $stock,'searchText'=>$query3]);
+            return view('reportes.grafico.detallestock', ['stock'=> $stock,'searchText'=>$query]);
         else    return view('reportes.grafico.detalleganancias', ['venta'=> $venta]);
         //return view('home');
     }

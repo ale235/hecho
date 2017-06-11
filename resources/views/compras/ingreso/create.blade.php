@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
             <h3>
-                Nuevo Ingreso
+                Nuevo Ingreso por Proveedor
             </h3>
             @if(count($errors)>0)
             <div class="alert alert-danger">
@@ -105,6 +105,8 @@
                             <input type="hidden" class="form-control" name="pidarticuloidarticulo" id="pidarticuloidarticulo"/>
                             <input type="hidden" class="form-control" name="pidproveedor" id="pidproveedor"/>
                         </div>
+                        <label id="codigoincorrecto" style="color: red; display: none">El código ingresado no corresponde</label>
+                        <label id="codigocorrecto" style="color: green; display: none">El código ingreso es correcto</label>
                     </div>
                 </div>
 
@@ -117,7 +119,7 @@
                 </div>
                 <div class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
                     <div class="form-group">
-                        <label for="precio_compra_costo">Precio de Compra</label>
+                        <label for="precio_compra_costo">Costo</label>
                         <input type="number" name="pprecio_compra_costo" id="pprecio_compra_costo" class="form-control" onkeyup="actualizar()" placeholder="Precio de Compra">
                     </div>
                 </div>
@@ -206,7 +208,6 @@
                 event.preventDefault();
             }
         });
-
         $(document).on('change','.lista-proveedores',function(){
             // console.log("hmm its change");
 
@@ -245,7 +246,7 @@
             });
         });
 
-        $(document).on('change','#pidarticulo',function(){
+        $(document).on('keyup','#pidarticulo',function(){
             // console.log("hmm its change");
 
             var cat_codigo=$(this).val();
@@ -260,8 +261,10 @@
                 success:function(data){
                     //console.log('success');
                     if(jQuery.isEmptyObject(data)){
-                        $('#pidarticulo').val("");
-                        alert('NO')
+//                        $('#pidarticulo').val("");
+//                        alert('NO')
+                        $('#codigoincorrecto').show();
+                        $('#codigocorrecto').hide();
                     }
                     else if($('#pidproveedor').val() != "" && $('#pidproveedor').val() != data.idpersona){
                         $('#pidarticulo').val("");
@@ -272,6 +275,8 @@
                         $('#pidarticuloidarticulo').val(data.idarticulo);
                         $('#pidarticulonombre').val(data.nombre);
                         $('#pidproveedor').val(data.idpersona);
+                        $('#codigoincorrecto').hide();
+                        $('#codigocorrecto').show();
                     }
 
                 },

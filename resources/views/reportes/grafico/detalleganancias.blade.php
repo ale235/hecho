@@ -53,6 +53,7 @@
                 </tbody>
             </table>
         </div>
+        {!! $venta->render() !!}
     </div>
 @endsection
 @push('scripts')

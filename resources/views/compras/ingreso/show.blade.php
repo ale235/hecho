@@ -35,7 +35,7 @@
                         <thead style="background-color: #a94442">
                             <th>Artículo</th>
                             <th>Cantidad</th>
-                            <th>Precio compra</th>
+                            <th>Costo</th>
                             <th>Porcentaje venta</th>
                             <th>Subtotal</th>
                         </thead>

@@ -11,6 +11,9 @@ use ideas\Http\Requests\ArticuloFormRequest;
 use ideas\Articulo;
 use ideas\Persona;
 use ideas\Precio;
+use ideas\Ingreso;
+use ideas\DetalleIngreso;
+use Carbon\Carbon;
 use DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -45,7 +48,7 @@ class ArticuloController extends Controller
                 ->where('art.estado','=',$query3)
                 ->where([
                     ['art.nombre','LIKE','%'.$query.'%'],
-                    ['art.codigo','LIKE','%'.$query2.'%'],
+                    ['art.barcode','LIKE','%'.$query2.'%'],
                     ['art.estado', '=', $query3],
                 ])
                 ->orderBy('art.idarticulo','desc')
@@ -64,7 +67,9 @@ class ArticuloController extends Controller
 
 
         $proveedores = DB::table('persona')
-            ->where('tipo_persona','=','Proveedor')->get();
+            ->where('tipo_persona','=','Proveedor')
+            ->where('estado','=','Activo')
+            ->get();
         $categorias=DB::table('categoria')
             ->where('condicion','=','1')
             ->get();
@@ -73,6 +78,9 @@ class ArticuloController extends Controller
 
     public function store(ArticuloFormRequest $request)
     {
+        try
+        {
+            DB::beginTransaction();
         $articulo = new Articulo;
         $ultimo =Articulo::orderBy('idarticulo','desc')->first();
         $articulo->idcategoria = $request->get('idcategoria');
@@ -93,6 +101,49 @@ class ArticuloController extends Controller
             $articulo->imagen = $file->getClientOriginalName();
         }
         $articulo->save();
+
+        $ingreso = new Ingreso;
+//            $pieces = explode("+", $request->get('idproveedor'));
+//            $ingreso->idproveedor = $pieces[0];
+        $ingreso->idproveedor = $request->get('idproveedorsolo');
+        $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+        $ingreso->fecha_hora=$mytime->toDateTimeString();
+        $ingreso->estado='Activo';
+        $ingreso->save();
+
+        $idarticulo = $articulo->idarticulo;
+        $cantidad = $request->get('pcantidad');
+        $precio_compra_costo = $request->get('pprecio_compra_costo');
+        $porcentaje_venta = $request->get('pporcentaje_venta');
+
+        $detalle = new DetalleIngreso();
+        $detalle->idingreso = $ingreso->idingreso;
+        $detalle->idarticulo = $idarticulo;
+        $detalle->cantidad = $cantidad;
+        $detalle->precio_compra_costo = $precio_compra_costo;
+        $detalle->porcentaje_venta = $porcentaje_venta;
+        $detalle->save();
+
+        $precio = new Precio();
+        $precio->idarticulo = $idarticulo;
+        $precio->porcentaje = $porcentaje_venta;
+        $precio->fecha = $mytime->toDateTimeString();
+        $precio->precio_compra = $precio_compra_costo;
+        $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+        $precio->save();
+
+        $articulo = Articulo::findOrFail($idarticulo);
+        $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+        $articulo->stock = $articulo->stock + $cantidad;
+        $articulo->update();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
         return Redirect::to('almacen/articulo?selectText=Activo');
     }
 
@@ -121,8 +172,9 @@ class ArticuloController extends Controller
         $articulo->idcategoria = $request->get('idcategoria');
         $articulo->codigo = $request->get('codigo');
         $articulo->nombre = $request->get('nombre');
-        $articulo->stock = 0;
+        //$articulo->stock = 0;
         $articulo->descripcion = $request->get('descripcion');
+        $articulo->barcode = $request->get('barcode');
         $articulo->estado = 'Activo';
 
         if(Input::hasFile('imagen'))
@@ -232,6 +284,14 @@ class ArticuloController extends Controller
             });
 
         })->export('xls');
+    }
+
+    public function buscarProveedor(Request $request){
+
+        //it will get price if its id match with product id
+        //$p=Product::select('price')->where('id',$request->id)->first();
+        $p=DB::table('persona as p')->select('p.idpersona')->where('p.codigo','=', $request->codigo)->get();
+        return response()->json($p);
     }
 
 // ->orderBy('p.idprecio','desc')

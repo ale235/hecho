@@ -51,7 +51,7 @@ Route::get('/buscarArticuloParaIngreso','IngresoController@buscarArticuloParaIng
 
 
 Route::get('/mostrarPrecio/{id}','ArticuloController@mostrarPrecio');
-
+Route::get('/buscarProveedor','ArticuloController@buscarProveedor');
 
 //Route::get('/export','VentaController@export');
 Route::get('/exportDetalle/{daterange}','VentaController@exportDetalle');

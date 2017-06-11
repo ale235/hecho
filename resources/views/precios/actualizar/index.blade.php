@@ -34,11 +34,26 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-                            <div class="form-group">
-                                <label>Porcentaje de Venta</label>
-                                <input type="number" name="pporcentaje_venta" id="pporcentaje_venta" class="form-control" onkeypress="return valida(event)" onkeyup="actualizar()" placeholder="Porcenaje de venta">
-                            </div>
+                        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                            <table id="detalles1" class="table table-striped table-bordered table-condensed table-hover">
+                                <thead style="background-color: #a94442">
+                                <th>Porcentaje de venta actual</th>
+                                <th>Costo Actual</th>
+                                <th>Precio de venta actial</th>
+                                <th>Nuevo porcentaje</th>
+                                {{--<th>Subtotal</th>--}}
+                                </thead>
+                                <tfoot>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                {{--<th><h4 id="total">$ 0.00</h4> <input type="hidden" name="total_venta" id="total_venta"></th>--}}
+                                </tfoot>
+                                <tbody>
+
+                                </tbody>
+                            </table>
                         </div>
                         <input name="_token" value="{{csrf_token()}}" type="hidden">
                         <button class="btn btn-primary" type="submit">Guardar</button>
@@ -87,14 +102,14 @@
                                 <th>Opciones</th>
                                 <th>Código</th>
                                 <th>Nombre</th>
-                                <th>Porcentaje Actual</th>
-                                <th>Precio de compra actual</th>
+                                <th>Porcentaje de venta actual</th>
+                                <th>Costo Actual</th>
                                 <th>Precio de venta actial</th>
                                 <th>Nuevo porcentaje</th>
                                 {{--<th>Subtotal</th>--}}
                                 </thead>
                                 <tfoot>
-                                <th>TOTAL</th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -165,11 +180,14 @@
                 url:'{!!URL::to('buscarPrecioArticulo')!!}',
                 data:{'id':cat_id},
                 success:function(data){
-                    //console.log('success');
+                    var fila =
+                        '<td><label type="number">%'+data[0].porcentaje+'</label></td>' +
+                        '<td><label type="number">$'+data[0].precio_compra+'</label></td>' +
+                        '<td><label type="number">$'+data[0].precio_venta+'</label></td>' +
+                        '<td><input type="number" name="nuevo_porcentaje1" value='+data[0].porcentaje+'></td>' +
+                        '</tr>';
 
-                    console.log(data);
-
-                    $('#pporcentaje_venta').val(data[0].porcentaje);
+                    $('#detalles1').append(fila);
                 },
                 error:function(){
 

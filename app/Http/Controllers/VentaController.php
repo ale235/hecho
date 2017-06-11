@@ -12,6 +12,7 @@ use ideas\Venta;
 use ideas\Articulo;
 use ideas\DetalleVenta;
 use ideas\Precio;
+use ideas\Persona;
 use DB;
 
 use Carbon\Carbon;
@@ -95,7 +96,22 @@ class VentaController extends Controller
         try {
             DB::beginTransaction();
             $venta = new Venta;
-            $venta->idcliente = $request->get('idcliente');
+            if($request->get('checkCliente')=='true'){
+                $persona = new Persona;
+                $persona->tipo_persona = 'Cliente';
+                $persona->nombre = $request->get('nombre');
+                $persona->num_documento = $request->get('num_documento');
+                $persona->direccion = $request->get('direccion');
+                $persona->telefono = $request->get('telefono');
+                $persona->email = $request->get('email');
+                $persona->instagram = $request->get('instagram');
+                $persona->facebook = $request->get('facebook');
+                $persona->save();
+                $venta->idcliente = $persona->idpersona;
+            }
+            else{
+                $venta->idcliente = $request->get('idcliente');
+            }
             $venta->tipo_comprobante = $request->get('tipo_comprobante');
             $venta->serie_comprobante = $request->get('serie_comprobante');
             $venta->num_comprobante = $request->get('num_comprobante');
