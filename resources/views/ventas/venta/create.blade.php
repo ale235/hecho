@@ -68,6 +68,47 @@
                         </div>
                     </div>
                     <input type="text" class="form-control" name="pidarticulo" id="pidarticulo"/>
+                    <span data-toggle="modal" data-target="#myModal2" class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <!-- Modal -->
+                    <div id="myModal2" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Modal Header</h4>
+                                </div>
+                                <div class="modal-body cuerpo">
+                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="cantidad">Cantidad</label>
+                                            <input type="number" name="pcantidadpeso" id="pcantidadpeso" class="form-control" onkeyup="actualizar()"
+                                                   placeholder="Cantidad">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="pprecio_venta_cantidad">Precio * Cantidad</label>
+                                            <input type="number" name="pprecio_venta_cantidad_peso" id="pprecio_venta_cantidad_peso" class="form-control"
+                                                   placeholder="Precio * Cantidad" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Guardar</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <select id="selectpidarticulo" class="selectpicker" data-live-search="true">
+                        <option>Seleccioná el artículo</option>
+                        @foreach($articulosporpeso as $ap)
+                            <option value="{{$ap->codigo}}">{{$ap->nombre}}</option>
+                        @endforeach
+                    </select>
                     <input type="hidden" class="form-control" name="pidarticulonombre" id="pidarticulonombre"/>
                     <input type="hidden" class="form-control" name="pidarticuloidarticulo" id="pidarticuloidarticulo"/>
                 </div>
@@ -333,7 +374,7 @@
             });
         });
 
-        $(document).on('keyup','#pidarticulo',function(){
+        $(document).on('keyup keydown','#pidarticulo',function(){
             // console.log("hmm its change");
 
             var cat_codigo=$(this).val();
@@ -373,6 +414,12 @@
 
 
         });
+
+        $(document).on('change','#selectpidarticulo',function(){
+            $('#pidarticulo').val($('#selectpidarticulo').val());
+//            $('#pidarticulo').trigger(jQuery.Event('keydown', { keycode: 13 }));
+            $('#myModal2').modal('show');
+        });
     });
     var cont = 0;
     total = 0;
@@ -402,9 +449,9 @@
         }
     }
     function mostrarcampos(){
-        $('#pprecio_venta').parent().parent().removeAttr("style")
-        $('#pidarticulo').parent().parent().removeAttr("style")
-        $('#pcantidad').parent().parent().removeAttr("style")
+        $('#pprecio_venta').parent().parent().removeAttr("style");
+        $('#pidarticulo').parent().parent().removeAttr("style");
+        $('#pcantidad').parent().parent().removeAttr("style");
 //        $('#pidarticuloidarticulo').val(data.idarticulo);
 //        $('#pidarticulonombre').val(data.nombre);
     }

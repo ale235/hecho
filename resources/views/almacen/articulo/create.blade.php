@@ -47,7 +47,7 @@
             {{--<div class="form-group">--}}
                 <label>Proveedores</label>
                 <select name="idproveedores" id="idproveedores" class="form-control">
-                        <option selected  value='PROV1'>PROV1</option>
+                        <option selected>Seleccione el Proveedor</option>
                     @foreach($proveedores as $prov)
                         <option value="{{$prov->codigo}}">{{$prov->codigo}}</option>
                     @endforeach

@@ -73,7 +73,8 @@ class VentaController extends Controller
         $personas = DB::table('persona')->where('tipo_persona', '=', 'Cliente')->get();
         $proveedores = DB::table('persona')->where('tipo_persona', '=', 'Proveedor')->where('estado', '=', 'Activo')->get();
         $articulos = Articulo::where('estado', '=', 'Activo')->get();
-        return view('ventas.venta.create', ['personas' => $personas, 'articulos' => $articulos, 'proveedores' => $proveedores]);
+        $articulosPorPeso = Articulo::where('estado', '=', 'Activo')->where('idcategoria','=','2')->get();
+        return view('ventas.venta.create', ['personas' => $personas, 'articulos' => $articulos, 'proveedores' => $proveedores,'articulosporpeso' => $articulosPorPeso]);
     }
 
     public function edit($id)
