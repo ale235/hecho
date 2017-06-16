@@ -78,9 +78,9 @@ class ArticuloController extends Controller
 
     public function store(ArticuloFormRequest $request)
     {
-        try
-        {
-            DB::beginTransaction();
+//        try
+//        {
+//            DB::beginTransaction();
         $articulo = new Articulo;
         $ultimo =Articulo::orderBy('idarticulo','desc')->first();
         $articulo->idcategoria = $request->get('idcategoria');
@@ -138,12 +138,12 @@ class ArticuloController extends Controller
         $articulo->stock = $articulo->stock + $cantidad;
         $articulo->update();
 
-            DB::commit();
-        }
-        catch(\Exception $e)
-        {
-            DB::rollback();
-        }
+//            DB::commit();
+//        }
+//        catch(\Exception $e)
+ //       {
+//            DB::rollback();
+//        }
         return Redirect::to('almacen/articulo?selectText=Activo');
     }
 
@@ -291,6 +291,18 @@ class ArticuloController extends Controller
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
         $p=DB::table('persona as p')->select('p.idpersona')->where('p.codigo','=', $request->codigo)->get();
+        return response()->json($p);
+    }
+
+    public function buscarUltimoId(Request $request){
+
+        //it will get price if its id match with product id
+        //$p=Product::select('price')->where('id',$request->id)->first();
+        $p=DB::table('articulo as art')
+            ->select('art.idarticulo')
+            ->where('art.proveedor','=', $request->codigo)
+            ->orderBy('art.idarticulo','desc')
+            ->get();
         return response()->json($p);
     }
 
