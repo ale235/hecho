@@ -68,7 +68,8 @@
                         </div>
                     </div>
                     <input type="text" class="form-control" name="pidarticulo" id="pidarticulo"/>
-                    <span data-toggle="modal" data-target="#myModal2" class="input-group-addon"><i class="fa fa-calendar"></i></span>
+
+{{--                    <span data-toggle="modal" data-target="#myModal2" class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     <!-- Modal -->
                     <div id="myModal2" class="modal fade" role="dialog">
                         <div class="modal-dialog">
@@ -109,12 +110,20 @@
                             <option value="{{$ap->codigo}}">{{$ap->nombre}}</option>
                         @endforeach
                     </select>
+                    --}}
                     <input type="hidden" class="form-control" name="pidarticulonombre" id="pidarticulonombre"/>
                     <input type="hidden" class="form-control" name="pidarticuloidarticulo" id="pidarticuloidarticulo"/>
                 </div>
             <label id="codigoincorrecto" style="color: red; display: none">El código ingresado no corresponde, ingrese nuevamente o corrija</label>
             <label id="codigocorrecto" style="color: green; display: none">El código ingreso es correcto</label>
         </div>
+        </div>
+        <div  style="display: none"  class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
+            <div class="form-group">
+                <label for="pnombreprooducto">Nombre</label>
+                <input type="text" name="pnombreproducto" id="pnombreproducto" class="form-control" onkeyup="actualizar()"
+                       placeholder="Nombre">
+            </div>
         </div>
         <div style="display: none" class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
             <div class="form-group">
@@ -140,9 +149,6 @@
         <div style="display: none" class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
             <div class="form-group">
                 <button type="button" id="bt_add" class="btn btn-primary">Agregar</button>
-            </div>
-            <div class="form-group">
-                <button type="button" id="bt_addpeso" class="btn btn-primary">Agregar peso</button>
             </div>
         </div>
         <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -265,6 +271,15 @@
         }
     };
 
+    $("#pcantidad").on('keypress', function (event) {
+        if (event.which == '10' || event.which == '13') {
+            event.preventDefault();
+        }
+        if (event.keyCode == 13) {
+            agregar();
+        }
+    });
+
 
     var form = $('#myForm'),
         checkbox = $('#checkCliente'),
@@ -291,9 +306,6 @@
        $('#bt_add').click(function () {
            agregar();
        });
-        $('#bt_addpeso').click(function () {
-            mostrarcampos();
-        });
         $("#pidarticulo").keypress(function(event){
             if (event.which == '10' || event.which == '13') {
                 event.preventDefault();
@@ -395,11 +407,22 @@
                             console.log(data);
 
                             $('#pprecio_venta').val(data[0].precio_venta);
-                            $('#pidarticulo').val(data.codigo);
+                            $('#pidarticulo').val(data.barcode);
                             $('#pcantidad').val(1);
                             $('#pidarticuloidarticulo').val(data.idarticulo);
                             $('#pidarticulonombre').val(data.nombre);
-                            agregar();
+                            $('#pnombreproducto').val(data.nombre);
+                            //agregar();
+                            if(data.idcategoria == 2){
+                                mostrarcampos();
+                                actualizar();
+                                $('#pcantidad').focus();
+                                $('#bt_add').parent().parent().removeAttr("style");
+                            }
+                            else{
+                                agregar();
+                            }
+
                             $('#codigoincorrecto').hide();
                         },
                         error:function(){
@@ -438,6 +461,7 @@
         $('#pidarticulo').val("");
         $('#pidarticulonombre').val("");
         $('#pprecio_venta_cantidad').val("")
+        $('#pnombreproducto').val("");
     }
 
     function evaluar(){
@@ -452,8 +476,19 @@
         $('#pprecio_venta').parent().parent().removeAttr("style");
         $('#pidarticulo').parent().parent().removeAttr("style");
         $('#pcantidad').parent().parent().removeAttr("style");
+        $('#pprecio_venta_cantidad').parent().parent().removeAttr("style");
+        $('#pnombreproducto').parent().parent().removeAttr("style");
+        $('#bt_add').parent().parent().removeAttr("style");
 //        $('#pidarticuloidarticulo').val(data.idarticulo);
 //        $('#pidarticulonombre').val(data.nombre);
+    }
+    function ocultarcampos() {
+        $('#pprecio_venta').parent().parent().css("display","none");
+       // $('#pidarticulo').parent().parent().css("display","none");
+        $('#pcantidad').parent().parent().css("display","none");
+        $('#pprecio_venta_cantidad').parent().parent().css("display","none");
+        $('#pnombreproducto').parent().parent().css("display","none");
+        $('#bt_add').parent().parent().css("display","none");
     }
     
     function agregar() {
@@ -482,7 +517,7 @@
                 $('#total_venta').val(total);
                 evaluar();
                 $('#detalles').append(fila);
-
+            ocultarcampos()
 
         }
         else{

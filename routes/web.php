@@ -75,5 +75,6 @@ Route::get('/cambiarEstadoArticulo/{id}', 'ArticuloController@cambiarEstadoArtic
 Route::get('/cambiarEstado/{id}', 'ProveedorController@cambiarEstado');
 
 Route::get('barcode', 'HomeController@barcode');
+Route::get('search/autocomplete', 'VentaController@autocomplete');
 
 Auth::routes();

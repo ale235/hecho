@@ -78,9 +78,9 @@ class ArticuloController extends Controller
 
     public function store(ArticuloFormRequest $request)
     {
-//        try
-//        {
-//            DB::beginTransaction();
+        try
+        {
+            DB::beginTransaction();
         $articulo = new Articulo;
         $ultimo =Articulo::orderBy('idarticulo','desc')->first();
         $articulo->idcategoria = $request->get('idcategoria');
@@ -138,12 +138,12 @@ class ArticuloController extends Controller
         $articulo->stock = $articulo->stock + $cantidad;
         $articulo->update();
 
-//            DB::commit();
-//        }
-//        catch(\Exception $e)
- //       {
-//            DB::rollback();
-//        }
+            DB::commit();
+        }
+        catch(\Exception $e)
+      {
+            DB::rollback();
+        }
         return Redirect::to('almacen/articulo?selectText=Activo');
     }
 
