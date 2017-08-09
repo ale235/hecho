@@ -33,16 +33,15 @@ class VentaController extends Controller
             if ($request->get('daterange') == null || $request->get('daterange') == '') {
                 $mytime = Carbon::now('America/Argentina/Buenos_Aires');
                 $date = $mytime->toDateTimeString();
-                $pieces[0] = $date;
-                $yearago = $mytime->subYears(1);
-                $date2 = $yearago->toDateTimeString();
-                $pieces[1] = $date2;
                 $ventas = DB::table('venta as v')
                     ->join('persona as p', 'v.idcliente', '=', 'p.idpersona')
                     ->join('detalle_venta as dv', 'v.idventa', '=', 'dv.idventa')
                     ->select('v.idventa', 'v.fecha_hora', 'p.nombre', 'v.tipo_comprobante', 'v.serie_comprobante', 'v.num_comprobante', 'v.impuesto', 'v.estado', 'v.total_venta','v.total_venta_real')
-                    ->whereBetween('v.fecha_hora', array(new Carbon($pieces[1]), new Carbon($pieces[0])))
+                   // ->whereBetween('v.fecha_hora', array(new Carbon($pieces[1]), new Carbon($pieces[0])))
 //                ->where('v.num_comprobante', 'LIKE', '%'.$query.'%')
+                    ->whereDay('fecha_hora',$mytime->day)
+                    ->whereMonth('fecha_hora',$mytime->month)
+                    ->whereYear('fecha_hora',$mytime->year)
                     ->orderBy('v.idventa', 'desc')
                     ->groupBy('v.idventa', 'v.fecha_hora', 'p.nombre', 'v.tipo_comprobante', 'v.serie_comprobante', 'v.num_comprobante', 'v.impuesto', 'v.estado', 'v.total_venta','v.total_venta_real')
                     ->paginate(20);

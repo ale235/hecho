@@ -1,16 +1,17 @@
 @extends ('layouts.admin')
 @section ('contenido')
 <div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pull-left">
         <h3>
             Listado de Ventas
         </h3>
-        <a href="venta/create"><button class="btn btn-success pull-left">Nueva Venta</button></a>
-        @if (Auth::user()->role == 1)
-        <a href="{{URL::action('VentaController@exportResultado',$date)}}"><button class="btn btn-success pull-right">Exportar Resultado <i class="fa fa-file-excel-o"></i></button></a>
-        <a href="{{URL::action('VentaController@exportDetalle',$date)}}"><button class="btn btn-success pull-right">Exportar Resultado con Detalle<i class="fa fa-file-excel-o"></i></button></a>
-        <a href="{{URL::action('VentaController@cajaDelDia')}}"><button class="btn btn-success pull-right">Caja del día<i class="fa fa-file-excel-o"></i></button></a>
+        <div class="btn-group">
+            <a href="{{URL::action('VentaController@cajaDelDia')}}"><button class="btn btn-success pull-right">Caja del día<i class="fa fa-file-excel-o"></i></button></a>
+            @if (Auth::user()->role == 1)
+            <a href="{{URL::action('VentaController@exportResultado',$date)}}"><button class="btn btn-success pull-right">Exportar Resultado <i class="fa fa-file-excel-o"></i></button></a>
+            <a href="{{URL::action('VentaController@exportDetalle',$date)}}"><button class="btn btn-success pull-right">Exportar Resultado con Detalle<i class="fa fa-file-excel-o"></i></button></a>
         @endif
+        </div>
         @include('ventas.venta.search')
     </div>
 </div>
@@ -67,7 +68,7 @@
         );
 
     });
-    $('#bt_add').click(function () {
+/*    $('#bt_add').click(function () {
         console.log($('input[name="daterange"]').val())
     });
     var val = getURLParameter('daterange');
@@ -77,7 +78,7 @@
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
     }
 
-
+*/
 
 
 </script>

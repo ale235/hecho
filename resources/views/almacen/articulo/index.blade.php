@@ -20,6 +20,9 @@
                  <thead>
                      <th>Nombre</th>
                      <th>Codigo</th>
+                     @if (Auth::user()->role == 1)
+                         <th>Stock</th>
+                     @endif
                      <th>Precio</th>
                      <th>Categoría</th>
                      <th>Estado</th>
@@ -29,6 +32,9 @@
                  <tr>
                      <td>{{$art->nombre}}</td>
                      <td>{{$art->codigo}}</td>
+                     @if (Auth::user()->role == 1)
+                         <th>{{$art->stock}}</th>
+                     @endif
                      <td>{{$art->ultimoprecio}}</td>
                      <td>{{$art->categoria}}</td>
                      <td>{{$art->estado}}</td>
