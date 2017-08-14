@@ -70,7 +70,7 @@ class ReportesController extends Controller
 
         $collection = DB::table('articulo')
             ->select(DB::raw('COUNT(*) as cantidad'))
-            ->where('stock','<','0')
+            ->where('stock','<=','0')
             ->where('estado','=','Activo')
             ->get();
 
@@ -202,8 +202,7 @@ class ReportesController extends Controller
 
         $query = trim($request->get('searchText'));
         $stock = DB::table('articulo')
-            ->where('stock','<=','0')
-            ->where('codigo','LIKE','%'.$query.'%')
+            ->where('barcode','LIKE','%'.$query.'%')
             ->where('estado','=','Activo')
             ->paginate(30);
 
