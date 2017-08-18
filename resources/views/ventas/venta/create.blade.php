@@ -127,7 +127,7 @@
         </div>
         <div style="display: none" class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
             <div class="form-group">
-                <label for="cantidad">Cantidad</label>
+                <label for="cantidad">Cantidad en gramos</label>
                 <input type="number" name="pcantidad" id="pcantidad" class="form-control" onkeyup="actualizar()"
                        placeholder="Cantidad">
             </div>
@@ -451,6 +451,7 @@
 
     function actualizar() {
         var b =  $('#pprecio_venta').val();
+        if($('#pcantidad'))
         var cantidad =  $('#pcantidad').val();
         $('#pprecio_venta_cantidad').val(cantidad *b);
     }

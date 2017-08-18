@@ -1,7 +1,115 @@
 @extends ('layouts.admin')
 @section ('contenido')
+    <!-- Input addon -->
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Nuevo Artículo</h3>
+        </div>
+        @if(count($errors)>0)
+            <div class="alert alert-danger">
+                <u>
+                    @foreach($errors->all() as $error)
+                        <li>{{$error}}</li>
+                    @endforeach
+                </u>
+            </div>
+        @endif
+        {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
+        {{Form::token()}}
+        <div class="box-body">
+            <div class="input-group">
+                <span class="input-group-addon">Nombre</span>
+                <input type="text" name="nombre"  value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
+            </div>
+            <br>
 
-    <div class="row">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">Categoría</span>
+                    <select name="idcategoria" class="form-control">
+                        @foreach($categorias as $cat)
+                            <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
+                        @endforeach
+                    </select>
+                    <span class="input-group-btn">
+                        <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
+                    </span>
+                </div>
+            </div>
+            <br>
+
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">Proveedor</span>
+                    <select  name="idproveedores" id="idproveedores"  class="form-control">
+                        <option selected>Seleccione el Proveedor</option>
+                        @foreach($proveedores as $prov)
+                            <option value="{{$prov->codigo}}">{{$prov->codigo}}</option>
+                        @endforeach
+                    </select>
+                    <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
+                    <span class="input-group-btn">
+                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
+                    </span>
+                </div>
+            </div>
+            <br>
+
+            <div style="display: none" class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
+                <div class="from-group">
+                    <label for="stock">Codigo</label>
+                    <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control" placeholder="Código...">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
+            </div>
+            <br>
+
+
+            <hr size="60" />
+
+            <div class="input-group">
+                <input type="number" name="pcantidad" id="pcantidad" class="form-control" onkeyup="actualizar()" placeholder="Cantidad">
+                <span class="input-group-addon">Cantidad de Artículos a Ingresar al Stock</span>
+            </div>
+            <br>
+
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input type="number" name="pprecio_compra_costo" id="pprecio_compra_costo" class="form-control" onkeyup="actualizar()" placeholder="Costo">
+                <span class="input-group-addon">Costo del Artículo</span>
+            </div>
+            <br>
+
+            <div class="input-group">
+                <span class="input-group-addon">%</span>
+                <input type="number" name="pporcentaje_venta" id="pporcentaje_venta" class="form-control" onkeypress="return valida(event)" onkeyup="actualizar()" placeholder="Porcentaje de Venta">
+                <span class="input-group-addon">Porcentaje de Venta del Artículo</span>
+            </div>
+            <br>
+
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input type="number" name="pprecio_venta_esperado" id="pprecio_venta_esperado"  class="form-control" placeholder="Precio Esperado">
+                <span class="input-group-addon">Precio Esperado (Es el cálculo del Costo x el Porcentaje de Venta)</span>
+            </div>
+            <br>
+            <!-- /input-group -->
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            <button type="reset" class="btn btn-default">Cancelar</button>
+            <button type="submit" class="btn btn-info pull-right">Cargar Artículo</button>
+        </div>
+        {!! Form::close()!!}
+    </div>
+    <!-- /.box -->
+
+
+{{--    <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
             <h3>
                 Nuevo Artículo
@@ -21,20 +129,20 @@
     {{Form::token()}}
     <div class="row">
         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            {{--<div class="from-group">--}}
+            --}}{{--<div class="from-group">--}}{{--
                 <label for="nombre">Nombre</label>
                 <input type="text" name="nombre"  value="{{old('nombre')}}" class="form-control" placeholder="Nombre...">
-            {{--</div>--}}
+            --}}{{--</div>--}}{{--
         </div>
         <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            {{--<div class="form-group">--}}
+            --}}{{--<div class="form-group">--}}{{--
                 <label>Categoria</label>
                 <select name="idcategoria" class="form-control">
                     @foreach($categorias as $cat)
                         <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
                     @endforeach
                 </select>
-            {{--</div>--}}
+            --}}{{--</div>--}}{{--
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
             <h3>
@@ -42,9 +150,10 @@
             </h3>
         </div>
     </div>
+
     <div class="row">
         <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            {{--<div class="form-group">--}}
+            --}}{{--<div class="form-group">--}}{{--
                 <label>Proveedores</label>
                 <select name="idproveedores" id="idproveedores" class="form-control">
                         <option selected>Seleccione el Proveedor</option>
@@ -53,7 +162,7 @@
                     @endforeach
                 </select>
             <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
-            {{--</div>--}}
+            --}}{{--</div>--}}{{--
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
             <h3>
@@ -61,16 +170,16 @@
             </h3>
         </div>
         <div style="display: none" class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            {{--<div class="from-group">--}}
+            --}}{{--<div class="from-group">--}}{{--
                 <label for="stock">Codigo</label>
                 <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control" placeholder="Código...">
-            {{--</div>--}}
+            --}}{{--</div>--}}{{--
         </div>
         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            {{--<div class="from-group">--}}
+            --}}{{--<div class="from-group">--}}{{--
             <label for="barcode">Codigo de Barras</label>
             <input type="text" name="barcode" id="barcode" value="{{old('barcode')}}" class="form-control" placeholder="Codigo de barras...">
-            {{--</div>--}}
+            --}}{{--</div>--}}{{--
         </div>
     </div>
 
@@ -102,20 +211,6 @@
             </div>
         </div>
     </div>
-    {{--<div class="row">--}}
-        {{--<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">--}}
-            {{--<div class="from-group">--}}
-            {{--<label for="imagen">Imagen</label>--}}
-            {{--<input type="file" name="imagen" class="form-control">--}}
-            {{--</div>--}}
-        {{--</div>--}}
-        {{--<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">--}}
-            {{--<div class="from-group">--}}
-                {{--<label for="descripcion">Descripción</label>--}}
-                {{--<input type="text" name="descripcion" value="{{old('descripcion')}}" class="form-control" placeholder="Descripcion del artículo...">--}}
-            {{--</div>--}}
-        {{--</div>--}}
-    {{--</div>--}}
 
     <div class="row">
         <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -126,7 +221,7 @@
         </div>
     </div>
 
-    {!! Form::close()!!}
+    {!! Form::close()!!}--}}
 @endsection
 
 @push ('scripts')
