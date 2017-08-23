@@ -3,6 +3,14 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Listado de Artículos</h3>
+            <a href="articulo/create" class="btn btn-app pull-right">
+                <span class="badge bg-green"></span>
+                <i class="fa fa-barcode"></i> Ingresar Producto
+            </a>
+            <a class="btn btn-app pull-right">
+                <span class="badge bg-green"></span>
+                <i class="fa fa-file-excel-o"></i> Exportar Resultado
+            </a>
         </div>
         @if(count($errors)>0)
             <div class="alert alert-danger">
@@ -15,12 +23,12 @@
         @endif
         @include('almacen.articulo.search')
         <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-condensed table-hover">
                         <thead>
                         <th>Nombre</th>
-                        <th>Codigo</th>
+                        <th>Código de Barras</th>
                         @if (Auth::user()->role == 1)
                             <th>Stock</th>
                         @endif
@@ -32,7 +40,7 @@
                         @foreach($articulos as $art)
                             <tr>
                                 <td>{{$art->nombre}}</td>
-                                <td>{{$art->codigo}}</td>
+                                <td>{{$art->barcode}}</td>
                                 @if (Auth::user()->role == 1)
                                     <th>{{$art->stock}}</th>
                                 @endif

@@ -44,7 +44,7 @@ class ArticuloController extends Controller
             $articulos = DB::table('articulo as art')
                 ->join('categoria as cat', 'art.idcategoria', '=', 'cat.idcategoria')
 //                ->join('precio as p', 'art.idarticulo', '=', 'p.idarticulo')
-                ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'cat.nombre as categoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio')
+                ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'cat.nombre as categoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode')
                 ->where('art.estado','=',$query3)
                 ->where([
                     ['art.nombre','LIKE','%'.$query.'%'],

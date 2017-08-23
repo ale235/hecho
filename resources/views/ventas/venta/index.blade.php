@@ -68,7 +68,7 @@
         );
 
     });
-/*    $('#bt_add').click(function () {
+    $('#bt_add').click(function () {
         console.log($('input[name="daterange"]').val())
     });
     var val = getURLParameter('daterange');
@@ -78,7 +78,7 @@
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
     }
 
-*/
+
 
 
 </script>

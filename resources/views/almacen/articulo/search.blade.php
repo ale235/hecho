@@ -1,42 +1,28 @@
 {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'GET', 'autocomplete'=>'off', 'role'=>'search')) !!}
 <div class="box-body">
     <div class="input-group">
+        <input type="text" name="searchText" class="form-control" value="{{$searchText}}" placeholder="Nombre">
         <span class="input-group-addon">Nombre del Artículo</span>
-        <input type="text" name="nombre"  value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
-    </div>
-    <br>
-
-    <div class="form-group">
-        <div class="input-group">
-            <span class="input-group-addon">Categoría</span>
-            <select name="idcategoria" class="form-control">
-
-            </select>
-            <span class="input-group-btn">
-                        <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
-                    </span>
-        </div>
-    </div>
-    <br>
-
-    <div class="form-group">
-        <div class="input-group">
-            <span class="input-group-addon">Proveedor</span>
-            <select  name="idproveedores" id="idproveedores"  class="form-control">
-                <option selected>Seleccione el Proveedor</option>
-
-            </select>
-            <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
-            <span class="input-group-btn">
-                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
-                    </span>
-        </div>
     </div>
     <br>
 
     <div class="input-group">
         <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-        <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
+        <input  type="text" name="searchText2" class="form-control" value="{{$searchText2}}" placeholder="Código de Barras">
+        <span class="input-group-addon">Código de Barras</span>
+
+    </div>
+    <br>
+
+    <div class="form-group">
+        <div class="input-group">
+            <select class="form-control" id="selectText" name="selectText">
+                @foreach($estados as $estado)
+                    <option value="{{$estado->estado}}">{{$estado->estado}}</option>
+                @endforeach
+            </select>
+            <span class="input-group-addon">Estado</span>
+        </div>
     </div>
     <br>
     <!-- /.box-body -->
