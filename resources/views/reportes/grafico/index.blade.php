@@ -55,7 +55,7 @@
                     <div class="icon">
                         <i class="ion ion-bag"></i>
                     </div>
-                    <a href="grafico/detallestock" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="{{URL::action('ReportesController@getDetalleStock')}}" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -69,27 +69,7 @@
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a href="#" class="small-box-footer" data-toggle="modal" data-target="#myModal" >Más Información <i class="fa fa-arrow-circle-right"></i></a>
-                    <!-- Modal -->
-                    <div id="myModal" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Modal Header</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Some text in the modal.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <a href="{{URL::action('ReportesController@getCajaDeHoy')}}" class="small-box-footer" >Más Información <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -104,7 +84,7 @@
                     <div class="icon">
                         <i class="ion ion-person-add"></i>
                     </div>
-                    <a href="" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="{{URL::action('ReportesController@getCajaDeAyer')}}" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -125,7 +105,7 @@
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="grafico/detalleganacias" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="{{URL::action('ReportesController@getDetalleGanancias')}}" class="small-box-footer">Más Información <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -133,7 +113,7 @@
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
-            <div class="container col-lg-12 ">
+            <div style="display: none" class="container col-lg-12 ">
                 <div class="panel panel-info">
                     <div class="panel-body">
                         <div id="sales-chart" style="position: relative; height: 300px;"></div>
@@ -327,29 +307,6 @@
             error: function(a){
             }
         });
-
-        {{--$('input[name="daterange"]').daterangepicker({},--}}
-
-            {{--function(start, end, label) {--}}
-            {{--$.ajax({--}}
-
-                {{--type:'get',--}}
-                {{--url:"{!!URL::to('ganancias')!!}",--}}
-                {{--success:function(result) {--}}
-                    {{--console.log("sent back -> do whatever you want now");--}}
-                {{--},--}}
-                {{--error: function(a){--}}
-                    {{--alert(a);--}}
-                {{--}--}}
-            {{--});--}}
-        {{--});--}}
-        {{--$('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {--}}
-            {{--$(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));--}}
-        {{--});--}}
-
-        {{--$('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {--}}
-            {{--$(this).val('');--}}
-        {{--});--}}
 
 
     });

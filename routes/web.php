@@ -77,4 +77,9 @@ Route::get('/cambiarEstado/{id}', 'ProveedorController@cambiarEstado');
 Route::get('barcode', 'HomeController@barcode');
 Route::get('search/autocomplete', 'VentaController@autocomplete');
 
+Route::get('/reportes/cajadeayer', 'ReportesController@getCajaDeAyer');
+Route::get('/reportes/cajadehoy', 'ReportesController@getCajaDeHoy');
+Route::get('/reportes/detallestock', 'ReportesController@getDetalleStock');
+Route::get('/reportes/detalleganancias', 'ReportesController@getDetalleGanancias');
+
 Auth::routes();

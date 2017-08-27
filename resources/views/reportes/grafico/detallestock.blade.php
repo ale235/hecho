@@ -1,12 +1,12 @@
 @extends ('layouts.admin')
 @section ('contenido')
 
-    {!! Form::open(array('url'=>'/barcode', 'method'=>'GET', 'autocomplete'=>'off', 'role'=>'search')) !!}
+    {!! Form::open(array('url'=>'/reportes/detallestock', 'method'=>'GET', 'autocomplete'=>'off', 'role'=>'search')) !!}
     <div class="form-group">
         <div class="input-group">
             <input type="text" class="form-control" name="searchText" placeholder="Buscar..." value="{{$searchText}}">
             <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary">Buscar por Código de barra</button>
+                <button type="submit" class="btn btn-primary">Buscar por Código de Barras o Nombre del Producto</button>
             </span>
         </div>
     </div>
@@ -16,8 +16,8 @@
             <table id="detalles" class="table table-striped table-bordered table-condensed table-hover">
                 <thead style="background-color: #a94442">
                 <th>Artículo</th>
+                <th>Código de Barras</th>
                 <th>Stock</th>
-                <th>Código</th>
                 <th>Volver a cero</th>
                 </thead>
                 <tfoot>
@@ -30,8 +30,8 @@
                 @foreach($stock as $det)
                     <tr>
                         <td>{{$det->nombre}}</td>
+                        <td>{{$det->barcode}}</td>
                         <td>{{$det->stock}}</td>
-                        <td>{{$det->codigo}}</td>
                         <td><a href="{{URL::action('ReportesController@volveracero',$det->idarticulo)}}"><button class="btn btn-primary">Volver a cero</button></a></td>
                     </tr>
                 @endforeach

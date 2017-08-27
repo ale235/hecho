@@ -36,34 +36,6 @@ class ReportesController extends Controller
         //return view('home');
     }
 
-    public function projectsChartData()
-    {
-//        $devlist =  DB::table('articulo as a')
-//            ->join('detalle_venta as dv','a.idarticulo','=','dv.idarticulo')
-//            ->get();
-
-        $start = Carbon::parse('2017-02-01 00:00:00')->startOfDay();  //2016-09-29 00:00:00.000000
-        $end = Carbon::parse('2017-02-03 00:00:00')->endOfDay(); //2016-09-29 23:59:59.000000
-
-        $devlist = DB::table('venta')
-            ->select('total_venta','fecha_hora')
-//            ->whereBetween('fecha_hora',[new Carbon('2017-02-02 00:00:00'),new Carbon('2017-02-03 00:00:00')])
-            ->whereBetween('fecha_hora',[$start, $end])
-            ->groupBy('total_venta','fecha_hora')
-            ->distinct('fecha_hora')->get();
-
-        //Articulo mçàs vendido
-
-        $collection = DB::table('detalle_venta as dv')
-            ->join('articulo as art','art.idarticulo','=','dv.idarticulo')
-            ->select('dv.idarticulo',DB::raw('sum(dv.cantidad) as lacantidad'),'art.proveedor')
-            ->groupBy('dv.idarticulo','art.proveedor')
-            ->orderBy('lacantidad','desc')
-            ->get();
-
-        return $collection;
-    }
-
     public function articulosSinStock()
     {
         //Articulo mçàs vendido
@@ -181,7 +153,7 @@ class ReportesController extends Controller
     public function show(Request $request)
     {
 
-        if ($request->get('daterange') == null || $request->get('daterange') == '') {
+/*        if ($request->get('daterange') == null || $request->get('daterange') == '') {
             $venta = DB::table('venta')
                 ->orderBy('fecha_hora','desc')
 //            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
@@ -210,7 +182,7 @@ class ReportesController extends Controller
         if($request->is('reportes/grafico/detallestock'))
             return view('reportes.grafico.detallestock', ['stock'=> $stock,'searchText'=>$query]);
         else    return view('reportes.grafico.detalleganancias', ['venta'=> $venta]);
-        //return view('home');
+        //return view('home');*/
     }
 
     public function volveracero($id){
@@ -220,8 +192,71 @@ class ReportesController extends Controller
         return Redirect::to('reportes/grafico/detallestock');
     }
 
-}
+    public function getCajaDeAyer() {
+        $mytime= Carbon::now('America/Argentina/Buenos_Aires')->yesterday();
 
-//public function scopeBirthdays($query)
-//{
-//    return $query-> User::whereMonth('DOB' , Carbon::today()->month);
+        //$date=$mytime->toDateTimeString();
+
+        $collection = DB::table('venta')
+            ->whereDay('fecha_hora',$mytime->day)
+            ->whereMonth('fecha_hora',$mytime->month)
+            ->whereYear('fecha_hora',$mytime->year)
+            ->paginate(30);
+
+        return view('reportes.grafico.cajadeayer', compact('collection'));
+    }
+
+    public function getCajaDeHoy() {
+        $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+        $detalle_venta_hoy = DB::table('detalle_venta as dv')
+            ->join('venta as v','dv.idventa','=','v.idventa')
+            ->join('articulo as art','art.idarticulo','=','dv.idarticulo')
+            ->whereDay('v.fecha_hora',$mytime->day)
+            ->whereMonth('v.fecha_hora',$mytime->month)
+            ->whereYear('v.fecha_hora',$mytime->year)
+            ->paginate(30);
+
+        return view('reportes.grafico.cajadehoy', compact('detalle_venta_hoy'));;
+    }
+
+    public function getDetalleStock(Request $request) {
+        if($request){
+            $query = trim($request->get('searchText'));
+            $stock = DB::table('articulo')
+                ->where('barcode','LIKE','%'.$query.'%')
+                ->orwhere('nombre','LIKE','%'.$query.'%')
+                ->where('estado','=','Activo')
+                ->paginate(30);
+        }
+
+
+        return view('reportes.grafico.detallestock', ['stock'=> $stock,'searchText'=>$query]);
+    }
+
+    public function getDetalleGanancias(Request $request) {
+        $date = $request->get('daterange');
+        $pieces = explode(" - ", $date);
+        if($request) {
+            if ($request->get('daterange') == null || $request->get('daterange') == '') {
+
+                $venta = DB::table('venta')
+                    ->orderBy('fecha_hora', 'desc')
+////            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
+               ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])
+                    ->paginate(30);
+            } else {
+                //dd($request);
+                $venta = DB::table('venta')
+//            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
+                    ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])
+                    ->orderBy('fecha_hora', 'desc')
+                    ->paginate(30);
+            }
+
+        }
+
+        return view('reportes.grafico.detalleganancias', ['venta'=> $venta]);
+    }
+
+}
