@@ -17,16 +17,28 @@
         {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
         {{Form::token()}}
         <div class="box-body">
+           <span> COLOCAR CODIGO DE BARRAS COMO PRIMER CARACTERISTICA, HACER CLICK EN ALGUN LADO PARA QUE SE CARGUEN<br>
+            SI EL ARTICULO EXISTE, SE VAN A COMPLETAR LOS CAMPOS CON LAS CARACTERISTICAS DE ESE ARTICULO, EN ESE CASO,
+            MODIFICAR LOS DATOS NECESARIOS</span><br>
+            <span>SI EL CODIGO NO EXISTE NO VA A CARGAR LAS CARACTERISTICAS Y SE CARGA COMO SE HACE NORMALMENTE</span><br>
+            PARA TEMRINAR HACER CLICK EN CARGAR ARTICULO.<br>
+            Llámenme cualquier cosa, mañana a las 9:00 am tengo una reunion que seguro dura una o 2 horas. Mejor si me llaman antes
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
+            </div>
+            <br>
+
             <div class="input-group">
                 <span class="input-group-addon">Nombre</span>
-                <input type="text" name="nombre"  value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
+                <input type="text" name="nombre" id="nombre" value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
             </div>
             <br>
 
             <div class="form-group">
                 <div class="input-group">
                     <span class="input-group-addon">Categoría</span>
-                    <select name="idcategoria" class="form-control">
+                    <select name="idcategoria" id="idcategoria" class="form-control">
                         @foreach($categorias as $cat)
                             <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
                         @endforeach
@@ -62,16 +74,10 @@
                 </div>
             </div>
 
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
-            </div>
-            <br>
-
-
             <hr size="60" />
 
             <div class="input-group">
+                <span id="inputdelexistencia" style="display: none" class="input-group-addon">Hay <span id="existencia"></span> artículos en Stock</span>
                 <input type="number" name="pcantidad" id="pcantidad" class="form-control" onkeyup="actualizar()" placeholder="Cantidad">
                 <span class="input-group-addon">Cantidad de Artículos a Ingresar al Stock</span>
             </div>
@@ -107,127 +113,17 @@
         {!! Form::close()!!}
     </div>
     <!-- /.box -->
-
-
-{{--    <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <h3>
-                Nuevo Artículo
-            </h3>
-            @if(count($errors)>0)
-                <div class="alert alert-danger">
-                    <u>
-                        @foreach($errors->all() as $error)
-                            <li>{{$error}}</li>
-                        @endforeach
-                    </u>
-                </div>
-            @endif
-        </div>
-    </div>
-    {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
-    {{Form::token()}}
-    <div class="row">
-        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            --}}{{--<div class="from-group">--}}{{--
-                <label for="nombre">Nombre</label>
-                <input type="text" name="nombre"  value="{{old('nombre')}}" class="form-control" placeholder="Nombre...">
-            --}}{{--</div>--}}{{--
-        </div>
-        <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            --}}{{--<div class="form-group">--}}{{--
-                <label>Categoria</label>
-                <select name="idcategoria" class="form-control">
-                    @foreach($categorias as $cat)
-                        <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
-                    @endforeach
-                </select>
-            --}}{{--</div>--}}{{--
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-            <h3>
-                <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-success">Nueva Categoría</button></a>
-            </h3>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12">
-            --}}{{--<div class="form-group">--}}{{--
-                <label>Proveedores</label>
-                <select name="idproveedores" id="idproveedores" class="form-control">
-                        <option selected>Seleccione el Proveedor</option>
-                    @foreach($proveedores as $prov)
-                        <option value="{{$prov->codigo}}">{{$prov->codigo}}</option>
-                    @endforeach
-                </select>
-            <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
-            --}}{{--</div>--}}{{--
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-            <h3>
-                <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-success">Nuevo Proveedor</button></a>
-            </h3>
-        </div>
-        <div style="display: none" class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            --}}{{--<div class="from-group">--}}{{--
-                <label for="stock">Codigo</label>
-                <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control" placeholder="Código...">
-            --}}{{--</div>--}}{{--
-        </div>
-        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-            --}}{{--<div class="from-group">--}}{{--
-            <label for="barcode">Codigo de Barras</label>
-            <input type="text" name="barcode" id="barcode" value="{{old('barcode')}}" class="form-control" placeholder="Codigo de barras...">
-            --}}{{--</div>--}}{{--
-        </div>
-    </div>
-
-    <hr size="20" />
-
-    <div class="row">
-        <div class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
-            <div class="form-group">
-                <label for="cantidad">Cantidad</label>
-                <input type="number" name="pcantidad" id="pcantidad" class="form-control" onkeyup="actualizar()" placeholder="Cantidad">
-            </div>
-        </div>
-        <div class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
-            <div class="form-group">
-                <label for="precio_compra_costo">Precio de Compra</label>
-                <input type="number" name="pprecio_compra_costo" id="pprecio_compra_costo" class="form-control" onkeyup="actualizar()" placeholder="Precio de Compra">
-            </div>
-        </div>
-        <div class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
-            <div class="form-group">
-                <label for="porcentaje_venta">Porcentaje de venta</label>
-                <input type="number" name="pporcentaje_venta" id="pporcentaje_venta" class="form-control" onkeypress="return valida(event)" onkeyup="actualizar()" placeholder="Porcentaje de Venta">
-            </div>
-        </div>
-        <div class="col-lg-2 col-sm-2 col-md-2 col-xs-12">
-            <div class="form-group">
-                <label for="precio_venta">Precio de venta Esperado</label>
-                <input type="number" name="pprecio_venta_esperado" id="pprecio_venta_esperado" class="form-control">
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit">Guardar</button>
-                <button class="btn btn-danger" type="reset">Reset</button>
-            </div>
-        </div>
-    </div>
-
-    {!! Form::close()!!}--}}
 @endsection
 
 @push ('scripts')
 <script>
     var casa = '<?php echo $articulos ?>';
     var ultimoid = null;
+    $("#barcode").keypress(function(event){
+        if (event.which == '10' || event.which == '13') {
+            event.preventDefault();
+        }
+    });
     $(document).ready(function () {
 /*        articulo = $('#idproveedores option:selected').text();
         $('#idproveedores').change(function () {
@@ -295,6 +191,37 @@
                     $('#codigo').val(' ');
                 }
             }
+
+        });
+
+        $(document).on('change','#barcode',function(){
+            var cat_id=$(this).val();
+            $.ajax({
+                type:'get',
+                url:'{!!URL::to('existeArticulo')!!}',
+                data:{'barcode':cat_id},
+                success:function(data){
+                    $('#barcode').attr('readonly', true);
+                    $('#nombre').val(data.nombre);
+                    $('#nombre').attr('readonly', true);
+                    $("#idcategoria").val(data.idcategoria);
+                    $("#codigo").val(data.codigo);
+                    $("#idproveedores").val(data.proveedor);
+                    $("#idproveedores").attr('disabled', 'disabled');
+                    $("#existencia").text(data.stock);
+                    $("#existencia").attr('attr', 'bold');
+                    $("#inputdelexistencia").show();
+                    $('#pprecio_compra_costo').val(data.precio_compra);
+                    $('#pporcentaje_venta').val(data.porcentaje);
+                    $('#pprecio_venta_esperado').val(data.precio_venta);
+                    $('#idproveedorsolo').val(data.idpersona);
+
+
+                },
+                error:function(){
+                    console.log("aca");
+                }
+            });
 
         });
     });

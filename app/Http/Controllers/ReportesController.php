@@ -235,18 +235,23 @@ class ReportesController extends Controller
     }
 
     public function getDetalleGanancias(Request $request) {
-        $date = $request->get('daterange');
-        $pieces = explode(" - ", $date);
         if($request) {
             if ($request->get('daterange') == null || $request->get('daterange') == '') {
-
+                $mytime = Carbon::now('America/Argentina/Buenos_Aires');
+                $mytime2 = Carbon::now()->startOfMonth();
+                $firstday = $mytime2->toDateTimeString();
+                $today = $mytime->toDateTimeString();
                 $venta = DB::table('venta')
                     ->orderBy('fecha_hora', 'desc')
 ////            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
-               ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])
+               ->whereBetween('fecha_hora',[$firstday,$today])
                     ->paginate(30);
             } else {
                 //dd($request);
+                $date = $request->get('daterange');
+                $pieces = explode(" - ", $date);
+                $pieces[0]=$pieces[0] . ' 00:00:00';
+                $pieces[1]=$pieces[1] . ' 23:59:00';
                 $venta = DB::table('venta')
 //            ->select('fecha_hora', DB::raw('sum(total_venta) as total_venta'))
                     ->whereBetween('fecha_hora',[$pieces[0],$pieces[1]])

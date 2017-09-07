@@ -34,6 +34,7 @@ Route::get('/findProductName','ArticuloController@findProductName');
 Route::get('/findPrice','ArticuloController@findPrice');
 Route::get('/exportArticulo/{selectText}','ArticuloController@exportArticulo');
 Route::get('/buscarUltimoId','ArticuloController@buscarUltimoId');
+Route::get('/existeArticulo','ArticuloController@existeArticulo');
 
 
 Route::get('/articulosSinStock','ReportesController@articulosSinStock');

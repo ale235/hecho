@@ -1,6 +1,6 @@
 @extends ('layouts.admin')
 @section ('contenido')
-    {!! Form::open(array('url'=>'reportes/detalleganancias', 'method'=>'GET', 'autocomplete'=>'off', 'role'=>'search', 'class'=>'form-horizontal', 'id'=>'elform')) !!}
+    {!! Form::open(array('url'=>'/reportes/detalleganancias', 'method'=>'GET', 'autocomplete'=>'off', 'role'=>'search', 'class'=>'form-horizontal', 'id'=>'elform')) !!}
     <div class="container">
         <div class="form-group">
             <label class="col-md-4 control-label">Código del artículo</label>

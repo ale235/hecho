@@ -31,7 +31,7 @@
                     <tr>
                         <td>{{$det->nombre}}</td>
                         <td>{{$det->barcode}}</td>
-                        <td>{{$det->stock}}</td>
+                        <td><input value="{{$det->stock}}"/></td>
                         <td><a href="{{URL::action('ReportesController@volveracero',$det->idarticulo)}}"><button class="btn btn-primary">Volver a cero</button></a></td>
                     </tr>
                 @endforeach

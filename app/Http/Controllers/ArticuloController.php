@@ -80,64 +80,112 @@ class ArticuloController extends Controller
     {
         try
         {
-            DB::beginTransaction();
+        DB::beginTransaction();
         $articulo = new Articulo;
-        $ultimo =Articulo::orderBy('idarticulo','desc')->first();
-        $articulo->idcategoria = $request->get('idcategoria');
-        $articulo->codigo = $request->get('idproveedores') . $request->get('codigo');
-        $articulo->proveedor = $request->get('idproveedores');
-        $articulo->nombre = $request->get('nombre');
-        $articulo->stock = 0;
-        $articulo->descripcion = $request->get('descripcion');
-        $articulo->estado = 'Activo';
-        if($request->get('barcode')== '')
-        $articulo->barcode = $ultimo->idarticulo + 1;
-        else $articulo->barcode = $request->get('barcode');
+            if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
+                $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
+                $articulo->idcategoria = $request->get('idcategoria');
+                //$articulo->codigo =$request->get('proveedor');
+                $articulo->proveedor = $request->get('codigo');
+                $articulo->nombre = $request->get('nombre');
+                $articulo->descripcion = $request->get('descripcion');
+                $articulo->estado = 'Activo';
 
-        if(Input::hasFile('imagen'))
-        {
-            $file=Input::file('imagen');
-            $file->move(public_path().'imagenes/articulos/', $file->getClientOriginalName());
-            $articulo->imagen = $file->getClientOriginalName();
-        }
-        $articulo->save();
+                $articulo->save();
+                //$articulo->stock=$articulo->stock + $request->get('pcantidad');
+                //dd($articulo);
 
-        $ingreso = new Ingreso;
+                $ingreso = new Ingreso;
+                $ingreso->idproveedor = $request->get('idproveedorsolo');
+                $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+                $ingreso->fecha_hora=$mytime->toDateTimeString();
+                $ingreso->estado='Activo';
+                $ingreso->save();
+
+                $idarticulo = $articulo->idarticulo;
+                $cantidad = $request->get('pcantidad');
+                $precio_compra_costo = $request->get('pprecio_compra_costo');
+                $porcentaje_venta = $request->get('pporcentaje_venta');
+
+                $detalle = new DetalleIngreso();
+                $detalle->idingreso = $ingreso->idingreso;
+                $detalle->idarticulo = $idarticulo;
+                $detalle->cantidad = $cantidad;
+                $detalle->precio_compra_costo = $precio_compra_costo;
+                $detalle->porcentaje_venta = $porcentaje_venta;
+                $detalle->save();
+
+                $precio = new Precio();
+                $precio->idarticulo = $idarticulo;
+                $precio->porcentaje = $porcentaje_venta;
+                $precio->fecha = $mytime->toDateTimeString();
+                $precio->precio_compra = $precio_compra_costo;
+                $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $precio->save();
+
+                //$articulo = Articulo::findOrFail($idarticulo);
+                $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $articulo->stock = $articulo->stock + $cantidad;
+                $articulo->update();
+            }
+            else{
+                $ultimo =Articulo::orderBy('idarticulo','desc')->first();
+                $articulo->idcategoria = $request->get('idcategoria');
+                $articulo->codigo = $request->get('idproveedores') . $request->get('codigo');
+                $articulo->proveedor = $request->get('idproveedores');
+                $articulo->nombre = $request->get('nombre');
+                $articulo->stock = 0;
+                $articulo->descripcion = $request->get('descripcion');
+                $articulo->estado = 'Activo';
+                if($request->get('barcode')== '')
+                    $articulo->barcode = $ultimo->idarticulo + 1;
+                else $articulo->barcode = $request->get('barcode');
+
+                if(Input::hasFile('imagen'))
+                {
+                    $file=Input::file('imagen');
+                    $file->move(public_path().'imagenes/articulos/', $file->getClientOriginalName());
+                    $articulo->imagen = $file->getClientOriginalName();
+                }
+                $articulo->save();
+
+                $ingreso = new Ingreso;
 //            $pieces = explode("+", $request->get('idproveedor'));
 //            $ingreso->idproveedor = $pieces[0];
-        $ingreso->idproveedor = $request->get('idproveedorsolo');
-        $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+                $ingreso->idproveedor = $request->get('idproveedorsolo');
+                $mytime= Carbon::now('America/Argentina/Buenos_Aires');
 
-        $ingreso->fecha_hora=$mytime->toDateTimeString();
-        $ingreso->estado='Activo';
-        $ingreso->save();
+                $ingreso->fecha_hora=$mytime->toDateTimeString();
+                $ingreso->estado='Activo';
+                $ingreso->save();
 
-        $idarticulo = $articulo->idarticulo;
-        $cantidad = $request->get('pcantidad');
-        $precio_compra_costo = $request->get('pprecio_compra_costo');
-        $porcentaje_venta = $request->get('pporcentaje_venta');
+                $idarticulo = $articulo->idarticulo;
+                $cantidad = $request->get('pcantidad');
+                $precio_compra_costo = $request->get('pprecio_compra_costo');
+                $porcentaje_venta = $request->get('pporcentaje_venta');
 
-        $detalle = new DetalleIngreso();
-        $detalle->idingreso = $ingreso->idingreso;
-        $detalle->idarticulo = $idarticulo;
-        $detalle->cantidad = $cantidad;
-        $detalle->precio_compra_costo = $precio_compra_costo;
-        $detalle->porcentaje_venta = $porcentaje_venta;
-        $detalle->save();
+                $detalle = new DetalleIngreso();
+                $detalle->idingreso = $ingreso->idingreso;
+                $detalle->idarticulo = $idarticulo;
+                $detalle->cantidad = $cantidad;
+                $detalle->precio_compra_costo = $precio_compra_costo;
+                $detalle->porcentaje_venta = $porcentaje_venta;
+                $detalle->save();
 
-        $precio = new Precio();
-        $precio->idarticulo = $idarticulo;
-        $precio->porcentaje = $porcentaje_venta;
-        $precio->fecha = $mytime->toDateTimeString();
-        $precio->precio_compra = $precio_compra_costo;
-        $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
-        $precio->save();
+                $precio = new Precio();
+                $precio->idarticulo = $idarticulo;
+                $precio->porcentaje = $porcentaje_venta;
+                $precio->fecha = $mytime->toDateTimeString();
+                $precio->precio_compra = $precio_compra_costo;
+                $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $precio->save();
 
-        $articulo = Articulo::findOrFail($idarticulo);
-        $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
-        $articulo->stock = $articulo->stock + $cantidad;
-        $articulo->update();
-
+                $articulo = Articulo::findOrFail($idarticulo);
+                $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $articulo->stock = $articulo->stock + $cantidad;
+                $articulo->update();
+            }
             DB::commit();
         }
         catch(\Exception $e)
@@ -304,6 +352,26 @@ class ArticuloController extends Controller
             ->orderBy('art.idarticulo','desc')
             ->get();
         return response()->json($p);
+    }
+
+    public function existeArticulo(Request $request){
+
+        //it will get price if its id match with product id
+        //$p=Product::select('price')->where('id',$request->id)->first();
+        $p=DB::table('articulo as art')
+            ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','p.precio_compra','person.idpersona','person.codigo')
+            ->join('persona as person','art.proveedor','=','person.codigo')
+            ->join('precio as p', 'art.idarticulo','=','p.idarticulo')
+            ->where('art.barcode','=', $request->barcode)
+            ->orderBy('p.idprecio','desc')
+            ->first();
+        if(count($p)>0){
+
+            return response()->json($p);
+        }
+       else{
+           return response()->json(['error' => 'Error msg'], 404);
+       }
     }
 
 // ->orderBy('p.idprecio','desc')
