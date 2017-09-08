@@ -17,12 +17,6 @@
         {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
         {{Form::token()}}
         <div class="box-body">
-           <span> COLOCAR CODIGO DE BARRAS COMO PRIMER CARACTERISTICA, HACER CLICK EN ALGUN LADO PARA QUE SE CARGUEN<br>
-            SI EL ARTICULO EXISTE, SE VAN A COMPLETAR LOS CAMPOS CON LAS CARACTERISTICAS DE ESE ARTICULO, EN ESE CASO,
-            MODIFICAR LOS DATOS NECESARIOS</span><br>
-            <span>SI EL CODIGO NO EXISTE NO VA A CARGAR LAS CARACTERISTICAS Y SE CARGA COMO SE HACE NORMALMENTE</span><br>
-            PARA TEMRINAR HACER CLICK EN CARGAR ARTICULO.<br>
-            Llámenme cualquier cosa, mañana a las 9:00 am tengo una reunion que seguro dura una o 2 horas. Mejor si me llaman antes
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
                 <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">

@@ -18,7 +18,7 @@
                 <th>Artículo</th>
                 <th>Código de Barras</th>
                 <th>Stock</th>
-                <th>Volver a cero</th>
+                <th>Editar Stock</th>
                 </thead>
                 <tfoot>
                 <th></th>
@@ -31,7 +31,7 @@
                     <tr>
                         <td>{{$det->nombre}}</td>
                         <td>{{$det->barcode}}</td>
-                        <td><input value="{{$det->stock}}"/></td>
+                        <td>{{$det->stock}}</td>
                         <td><a href="{{URL::action('ReportesController@volveracero',$det->idarticulo)}}"><button class="btn btn-primary">Volver a cero</button></a></td>
                     </tr>
                 @endforeach

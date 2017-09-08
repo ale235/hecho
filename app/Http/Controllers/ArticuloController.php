@@ -215,12 +215,13 @@ class ArticuloController extends Controller
     {
         try
         {
+      //      dd($request);
             DB::beginTransaction();
         $articulo = Articulo::findOrFail($id);
         $articulo->idcategoria = $request->get('idcategoria');
         $articulo->codigo = $request->get('codigo');
         $articulo->nombre = $request->get('nombre');
-        //$articulo->stock = 0;
+        $articulo->stock = $request->get('pcantidad');;
         $articulo->descripcion = $request->get('descripcion');
         $articulo->barcode = $request->get('barcode');
         $articulo->estado = 'Activo';
