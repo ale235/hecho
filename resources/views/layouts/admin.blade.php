@@ -217,6 +217,8 @@
 <!-- Bootstrap select -->
 <script src={{asset('js/bootstrap-select.min.js')}}></script>
 
+<script src={{asset('js/jquery.bootstrap.wizard.min.js')}}></script>
+
 <script src={{asset('js/bootstrap-table.js')}}></script>
 <!-- AdminLTE App -->
 <script src={{asset('js/app.min.js')}}></script>
