@@ -1,6 +1,6 @@
 @extends ('layouts.admin')
 @section ('contenido')
-    {{--<div class="box box-info">
+    <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Latest Orders</h3>
 
@@ -12,77 +12,88 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <div class="table-responsive">
-                <table class="table no-margin">
-                    <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Item</th>
-                        <th>Status</th>
-                        <th>Popularity</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                        <td>Call of Duty IV</td>
-                        <td><span class="label label-success">Shipped</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                        <td>Samsung Smart TV</td>
-                        <td><span class="label label-warning">Pending</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                        <td>iPhone 6 Plus</td>
-                        <td><span class="label label-danger">Delivered</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                        <td>Samsung Smart TV</td>
-                        <td><span class="label label-info">Processing</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                        <td>Samsung Smart TV</td>
-                        <td><span class="label label-warning">Pending</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                        <td>iPhone 6 Plus</td>
-                        <td><span class="label label-danger">Delivered</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                        <td>Call of Duty IV</td>
-                        <td><span class="label label-success">Shipped</span></td>
-                        <td>
-                            <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div id="rootwizard">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul>
+                                <li><a href="#tab1" data-toggle="tab">First</a></li>
+                                <li><a href="#tab2" data-toggle="tab">Second</a></li>
+                                <li><a href="#tab3" data-toggle="tab">Third</a></li>
+                                <li><a href="#tab4" data-toggle="tab">Forth</a></li>
+                                <li><a href="#tab5" data-toggle="tab">Fifth</a></li>
+                                <li><a href="#tab6" data-toggle="tab">Sixth</a></li>
+                                <li><a href="#tab7" data-toggle="tab">Seventh</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="bar" class="progress">
+                    <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab1">
+                        <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Item</th>
+                                    <th>Status</th>
+                                    <th>Popularity</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($articulos as $art)
+                                    <tr id="row{{$loop->index}}">
+                                        <td>{{$art->nombre}}</td>
+                                        <td>{{$art->barcode}}</td>
+                                        @if (Auth::user()->role == 1)
+                                            <th>{{$art->stock}}</th>
+                                        @endif
+                                        <td>{{$art->ultimoprecio}}</td>
+                                        {{--<td>{{$art->categoria}}</td>--}}
+                                        <td>{{$art->estado}}</td>
+                                        <td>
+                                            <a href="{{URL::action('ArticuloController@edit',$art->idarticulo)}}"><button class="btn btn-info">Editar</button></a>
+                                            <a href="{{URL::action('ArticuloController@cambiarEstadoArticulo',$art->idarticulo)}}"><button class="btn btn-warning">Cambiar estado</button></a>
+                                            <a href="" data-target="#modal-delete-{{$art->idarticulo}}" data-toggle="modal"><button class="btn btn-danger">Eliminar</button></a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab2">
+                        <p>
+                            <input type='text' name='name' id='name' placeholder='Enter Your Name'>
+                        </p>
+                    </div>
+                    <div class="tab-pane" id="tab3">
+                        3
+                    </div>
+                    <div class="tab-pane" id="tab4">
+                        4
+                    </div>
+                    <div class="tab-pane" id="tab5">
+                        5
+                    </div>
+                    <div class="tab-pane" id="tab6">
+                        6
+                    </div>
+                    <div class="tab-pane" id="tab7">
+                        7
+                    </div>
+                    {{--<ul class="pager wizard">--}}
+                        {{--<li class="previous first" style="display:none;"><a href="#">First</a></li>--}}
+                        {{--<li class="previous"><a href="#">Previous</a></li>--}}
+                        {{--<li class="next last" style="display:none;"><a href="#">Last</a></li>--}}
+                        {{--<li class="next"><a href="#">Next</a></li>--}}
+                    {{--</ul>--}}
+                </div>
             </div>
-            <!-- /.table-responsive -->
+        <!-- /.table-responsive -->
         </div>
         <!-- /.box-body -->
         <div class="box-footer clearfix">
@@ -90,57 +101,6 @@
             <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
         </div>
         <!-- /.box-footer -->
-    </div>--}}
-    <div id="rootwizard">
-        <div class="navbar">
-            <div class="navbar-inner">
-                <div class="container">
-                    <ul>
-                        <li><a href="#tab1" data-toggle="tab">First</a></li>
-                        <li><a href="#tab2" data-toggle="tab">Second</a></li>
-                        <li><a href="#tab3" data-toggle="tab">Third</a></li>
-                        <li><a href="#tab4" data-toggle="tab">Forth</a></li>
-                        <li><a href="#tab5" data-toggle="tab">Fifth</a></li>
-                        <li><a href="#tab6" data-toggle="tab">Sixth</a></li>
-                        <li><a href="#tab7" data-toggle="tab">Seventh</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div id="bar" class="progress">
-            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
-        </div>
-        <div class="tab-content">
-            <div class="tab-pane" id="tab1">
-                1
-            </div>
-            <div class="tab-pane" id="tab2">
-                <p>
-                    <input type='text' name='name' id='name' placeholder='Enter Your Name'>
-                </p>
-            </div>
-            <div class="tab-pane" id="tab3">
-                3
-            </div>
-            <div class="tab-pane" id="tab4">
-                4
-            </div>
-            <div class="tab-pane" id="tab5">
-                5
-            </div>
-            <div class="tab-pane" id="tab6">
-                6
-            </div>
-            <div class="tab-pane" id="tab7">
-                7
-            </div>
-            <ul class="pager wizard">
-                <li class="previous first" style="display:none;"><a href="#">First</a></li>
-                <li class="previous"><a href="#">Previous</a></li>
-                <li class="next last" style="display:none;"><a href="#">Last</a></li>
-                <li class="next"><a href="#">Next</a></li>
-            </ul>
-        </div>
     </div>
 @endsection
 @push ('scripts')

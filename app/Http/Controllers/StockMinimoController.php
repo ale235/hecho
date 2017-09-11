@@ -3,6 +3,8 @@
 namespace ideas\Http\Controllers;
 
 use Illuminate\Http\Request;
+use ideas\Articulo;
+use DB;
 
 class StockMinimoController extends Controller
 {
@@ -15,7 +17,9 @@ class StockMinimoController extends Controller
     {
         if($request)
         {
-            return view('compras.stockminimo.index');
+            $articulos = DB::table('articulo as art')->get();
+            $cantidad = DB::table('articulo as art')->count();
+            return view('compras.stockminimo.index',compact('articulos','cantidad'));
         }
     }
 
