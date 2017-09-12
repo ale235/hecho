@@ -212,7 +212,7 @@
 <script type="text/javascript" src={{asset('js/daterangepicker.js')}}></script>
 <!-- Bootstrap 3.3.5 -->
 @stack('scripts'))
-<script type="text/javascript" src={{asset('js/Chart.js')}}></script>
+
 <script src={{asset('js/bootstrap.min.js')}}></script>
 <!-- Bootstrap select -->
 <script src={{asset('js/bootstrap-select.min.js')}}></script>

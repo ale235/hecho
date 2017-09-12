@@ -7,6 +7,7 @@
 
 
 
+
 //            google.charts.setOnLoadCallback(drawChart);
 
             {{--function drawChart() {--}}
@@ -127,6 +128,13 @@
                     </div>
                 </div>
             </div>
+            <div class="container col-lg-12 ">
+                <div class="panel panel-info">
+                    <div class="panel-body">
+                        <div id="graph" style="position: relative; height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
             <!-- Left col -->
             {{--<section class="col-lg-12 connectedSortable">--}}
                 {{--<!-- Custom tabs (Charts with tabs)-->--}}
@@ -160,6 +168,25 @@
 
 @endsection
 @push('scripts')
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script>
+    Morris.Bar({
+        element: 'graph',
+        data: [
+            {x: '2011 Q1', y: 3, z: 2, a: 3},
+            {x: '2011 Q2', y: 2, z: null, a: 1},
+            {x: '2011 Q3', y: 0, z: 2, a: 4},
+            {x: '2011 Q4', y: 2, z: 4, a: 3}
+        ],
+        xkey: 'x',
+        ykeys: ['y', 'z', 'a'],
+        labels: ['Y', 'Z', 'A']
+    }).on('click', function(i, row){
+        console.log(i, row);
+    });
+</script>
 <script>
     $(document).ready(function () {
         $.ajax({
