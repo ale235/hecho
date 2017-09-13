@@ -17,10 +17,44 @@ class StockMinimoController extends Controller
     {
         if($request)
         {
+            //dd($request);
             $articulos = DB::table('articulo as art')->get();
             $cantidad = DB::table('articulo as art')->count();
             return view('compras.stockminimo.index',compact('articulos','cantidad'));
         }
     }
+
+    public function create()
+    {
+        $articulos = DB::table('articulo as art')->get();
+        $cantidad = DB::table('articulo as art')->count();
+        return view('compras.stockminimo.create',compact('articulos','cantidad'));
+    }
+
+    public function store()
+    {
+
+    }
+
+    public function show()
+    {
+    }
+
+    public function edit()
+    {
+
+    }
+
+    public function update()
+    {
+
+    }
+
+    public function destroy()
+    {
+
+    }
+
+
 
 }
