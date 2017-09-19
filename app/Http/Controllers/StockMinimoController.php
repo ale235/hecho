@@ -23,7 +23,21 @@ class StockMinimoController extends Controller
             $articulos = DB::table('articulo as art')
                 ->whereNotNull('art.stock_minimo')
                 ->get();
-            return view('compras.stockminimo.index',compact('articulos'));
+            $articulosMinimosTotal = DB::table('articulo as art')
+                ->whereNotNull('art.stock_minimo')
+                ->count();
+            $diferencia = DB::table('articulo as art')
+                ->whereNotNull('art.stock_minimo')
+                ->get();
+            $cantidad = 0;
+            foreach ($diferencia as $a) {
+               if($a->stock_minimo >= $a->stock){
+                   $cantidad = $cantidad + 1;
+               }
+            }
+            $porcentaje = ($cantidad / $articulosMinimosTotal) * 100;
+            //dd($cantidad);
+            return view('compras.stockminimo.index',compact('articulos','porcentaje'));
         }
     }
 

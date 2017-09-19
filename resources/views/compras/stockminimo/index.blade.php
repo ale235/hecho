@@ -3,27 +3,32 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Estado del Stock Mínimo<br><br></h3>
+            @if($porcentaje <=25)
             <div id="myAlert" class="alert alert-danger alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-ban"></i> Alert!</h4>
                 Danger alert preview. This alert is dismissable. A wonderful serenity has taken possession of my entire
                 soul, like these sweet mornings of spring which I enjoy with my whole heart.
             </div>
+            @elseif($porcentaje > 25 && $porcentaje <= 50)
             <div class="alert alert-info alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-info"></i> Alert!</h4>
                 Info alert preview. This alert is dismissable.
             </div>
+            @elseif($porcentaje > 50 && $porcentaje <= 75)
             <div class="alert alert-warning alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
                 Warning alert preview. This alert is dismissable.
             </div>
+            @else
             <div class="alert alert-success alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-check"></i> Alert!</h4>
                 Success alert preview. This alert is dismissable.
             </div>
+            @endif
             <!-- /.col -->
         </div>
         <!-- /.box-header -->
@@ -36,6 +41,7 @@
                             <th>Nombre</th>
                             <th>Código de Barras</th>
                             <th>Precio</th>
+                            <th>Stock</th>
                             <th>Stock mínimo</th>
                         </tr>
                         </thead>
@@ -45,6 +51,7 @@
                                 <td>{{$art->nombre}}</td>
                                 <td>{{$art->barcode}}</td>
                                 <td>{{$art->ultimoprecio}}</td>
+                                <td>{{$art->stock}}</td>
                                 <td>{{$art->stock_minimo}}</td>
                             </tr>
                         @endforeach
@@ -64,10 +71,10 @@
 @endsection
 @push ('scripts')
 <script>
-    $('.alert').hide();
-
-    $('.close').click(function() {
-        $('.alert').hide();
-    })
+//    $('.alert').hide();
+//
+//    $('.close').click(function() {
+//        $('.alert').hide();
+//    })
 </script>
 @endpush
