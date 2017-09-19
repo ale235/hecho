@@ -20,6 +20,10 @@
             {!! Form::model($categoria, ['method'=>'PATCH','route'=>['categoria.update',$categoria->idcategoria]])!!}
             {{Form::token()}}
             <div class="from-group">
+                <label for="nombre">Id Categoría</label>
+                <input type="text" name="nombre" class="form-control" value="{{$categoria->idcategoria}}">
+            </div>
+            <div class="from-group">
                 <label for="nombre">Nombre</label>
                 <input type="text" name="nombre" class="form-control" value="{{$categoria->nombre}}">
             </div>

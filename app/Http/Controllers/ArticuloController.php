@@ -375,6 +375,4 @@ class ArticuloController extends Controller
        }
     }
 
-// ->orderBy('p.idprecio','desc')
-//->select(DB::raw('max(p.idprecio) as elprecio'),'p.idprecio','art.idarticulo','p.fecha','p.precio_venta','art.codigo','art.nombre','p.porcentaje','p.precio_compra')
 }

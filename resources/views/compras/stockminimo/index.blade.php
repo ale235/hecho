@@ -3,32 +3,33 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Estado del Stock Mínimo<br><br></h3>
-            @if($porcentaje <=25)
-            <div id="myAlert" class="alert alert-danger alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h4><i class="icon fa fa-ban"></i> Alert!</h4>
-                Danger alert preview. This alert is dismissable. A wonderful serenity has taken possession of my entire
-                soul, like these sweet mornings of spring which I enjoy with my whole heart.
-            </div>
-            @elseif($porcentaje > 25 && $porcentaje <= 50)
-            <div class="alert alert-info alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h4><i class="icon fa fa-info"></i> Alert!</h4>
-                Info alert preview. This alert is dismissable.
-            </div>
-            @elseif($porcentaje > 50 && $porcentaje <= 75)
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
-                Warning alert preview. This alert is dismissable.
-            </div>
-            @else
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h4><i class="icon fa fa-check"></i> Alert!</h4>
-                Success alert preview. This alert is dismissable.
-            </div>
-            @endif
+            {{--@if($porcentaje != 0)--}}
+             @if($porcentaje <=25)
+             <div id="myAlert" class="alert alert-danger alert-dismissible">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                 <h4><i class="icon fa fa-ban"></i> COMPRA!!!</h4>
+                 Demasiados productos están por debajo del Stock Mínimo. Hacer la compra urgente
+             </div>
+             @elseif($porcentaje > 25 && $porcentaje <= 50)
+             <div class="alert alert-warning alert-dismissible">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                 <h4><i class="icon fa fa-warning"></i> ATENTO!!!</h4>
+                 Muchos productos están por debajo del Stock Mínimo. Evaluar que productos comprar.
+             </div>
+             @elseif($porcentaje > 50 && $porcentaje <= 75)
+             <div class="alert alert-info alert-dismissible">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                 <h4><i class="icon fa fa-info"></i> Bien</h4>
+                 A un paso de estar complicado con el Stock. Ya ir hablando con los proveedores.
+             </div>
+             @else
+             <div class="alert alert-success alert-dismissible">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                 <h4><i class="icon fa fa-check"></i> No es necesaria la reposición del Stock Mínimo</h4>
+                 Buen Stock. No desesperarse. Todavía hay suficiente pero tener en cuenta que es Stock Mínimo.
+             </div>
+             @endif
+            {{--@endif--}}
             <!-- /.col -->
         </div>
         <!-- /.box-header -->
@@ -52,7 +53,24 @@
                                 <td>{{$art->barcode}}</td>
                                 <td>{{$art->ultimoprecio}}</td>
                                 <td>{{$art->stock}}</td>
-                                <td>{{$art->stock_minimo}}</td>
+                                <td>{{$art->stock_minimo}}
+                                    @if($art->diferencia >= 5)
+                                    <span class="text-green">
+                                        <i class="fa fa-angle-up">
+                                        </i>{{$art->diferencia}}
+                                    </span>
+                                    @elseif($art->diferencia < 5 && $art->diferencia >= 1)
+                                    <span class="text-yellow">
+                                        <i class="fa fa-angle-up">
+                                        </i>  {{$art->diferencia}}
+                                    </span>
+                                    @else
+                                     <span class="text-red">
+                                        <i class="fa fa-angle-down">
+                                        </i>{{$art->diferencia}}
+                                     </span>
+                                     @endif
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -63,9 +81,12 @@
         <!-- /.table-responsive -->
         </div>
         <!-- /.box-body -->
-        <div class="box-footer clearfix">
-            <a href="stockminimo/create"  class="btn btn-sm btn-default btn-flat pull-right">Cambiar Stock Mínimo</a>
-        </div>
+        <a href="stockminimo/create" class="btn btn-app">
+            <i class="fa fa-edit"></i> Editar Stock Mínimo
+        </a>
+        {{--<div class="box-footer clearfix">--}}
+            {{--<a href="stockminimo/create"  class="btn btn-sm btn-default btn-flat pull-right">Cambiar Stock Mínimo</a>--}}
+        {{--</div>--}}
         <!-- /.box-footer -->
     </div>
 @endsection

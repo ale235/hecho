@@ -14,6 +14,8 @@ use ideas\DetalleVenta;
 use ideas\Precio;
 use ideas\Persona;
 use DB;
+use Illuminate\Support\Facades\Auth;
+use PHPExcel_Worksheet_Drawing;
 
 use Carbon\Carbon;
 use Response;
@@ -501,9 +503,32 @@ class VentaController extends Controller
         Excel::create('Laravel Excel', function ($excel) use ($columna) {
 
             $excel->sheet('Excel sheet', function ($sheet) use ($columna) {
+//                $sheet->cells('A1:A5', function($cells) {
+//                    $cells->setFont(array(
+//                        'family'     => 'Calibri',
+//                        'size'       => '16',
+//                        'bold'       =>  true
+//                    ));
+//                    // manipulate the range of cells
+//
+//                });
+                $sheet->setBorder('A1:F10', 'thin');
+                $mytime = Carbon::now('America/Argentina/Buenos_Aires');
+                if($mytime->hour < 16) {
+                    $turno = "Mañana";
+                }else {
+                    $turno = "Tarde";
+                }
+                $sheet->mergeCells('A1:F1');
+                //$objDrawing = new PHPExcel_Worksheet_Drawing;
+                //$objDrawing->setPath(public_path('imagenes\articulos\peluche.jpg')); //your image path
+                //$objDrawing->setCoordinates('A1');
 
-                $sheet->row(1, ['Nombre', 'Precio venta', 'Cantidad', 'Precio total']);
-                $sheet->fromArray($columna, null, 'A1', false, false);
+                //$objDrawing->setWorksheet($sheet);
+                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("d/m/Y");
+                $sheet->row(2, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
+                $sheet->mergeCells('A3:F3');
+                $sheet->fromArray($columna, null, 'A4', false, false);
 
             });
 

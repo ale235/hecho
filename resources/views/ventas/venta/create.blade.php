@@ -24,93 +24,9 @@
         <div class="form-group">
             <label>Código del artículo</label>
                 <div class="input-group">
-                    <span data-toggle="modal" data-target="#myModal" class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    <!-- Modal -->
-                    <div id="myModal" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Modal Header</h4>
-                                </div>
-                                <div class="modal-body cuerpo">
-                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                                        <div class="from-group">
-                                            <label for="proveedor">Proveedor</label>
-                                            <select name="idproveedor" id="idproveedor"
-                                                    class="lista-proveedores form-control">
-                                                <option value="0" disabled="true" selected="true">Seleccione el
-                                                    Proveedor
-                                                </option>
-                                                @foreach($proveedores as $proveedor)
-                                                    <option value="{{$proveedor->idpersona}}+{{$proveedor->codigo}}">{{$proveedor->codigo}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                                        <div class="from-group">
-                                            <label for="articulo">Artículo</label>
-                                            <select class="nombre-articulo form-control">
-                                                <option value="0" disabled="true" selected="true">Artículos</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Guardar</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
                     <input type="text" class="form-control" name="pidarticulo" id="pidarticulo"/>
-
-{{--                    <span data-toggle="modal" data-target="#myModal2" class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    <!-- Modal -->
-                    <div id="myModal2" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Modal Header</h4>
-                                </div>
-                                <div class="modal-body cuerpo">
-                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                                        <div class="form-group">
-                                            <label for="cantidad">Cantidad</label>
-                                            <input type="number" name="pcantidadpeso" id="pcantidadpeso" class="form-control" onkeyup="actualizar()"
-                                                   placeholder="Cantidad">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                                        <div class="form-group">
-                                            <label for="pprecio_venta_cantidad">Precio * Cantidad</label>
-                                            <input type="number" name="pprecio_venta_cantidad_peso" id="pprecio_venta_cantidad_peso" class="form-control"
-                                                   placeholder="Precio * Cantidad" disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Guardar</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <select id="selectpidarticulo" class="selectpicker" data-live-search="true">
-                        <option>Seleccioná el artículo</option>
-                        @foreach($articulosporpeso as $ap)
-                            <option value="{{$ap->codigo}}">{{$ap->nombre}}</option>
-                        @endforeach
-                    </select>
-                    --}}
                     <input type="hidden" class="form-control" name="pidarticulonombre" id="pidarticulonombre"/>
                     <input type="hidden" class="form-control" name="pidarticuloidarticulo" id="pidarticuloidarticulo"/>
                 </div>
@@ -413,7 +329,7 @@
                             $('#pidarticulonombre').val(data.nombre);
                             $('#pnombreproducto').val(data.nombre);
                             //agregar();
-                            if(data.idcategoria == 2){
+                            if(data.idcategoria == 2 || data.idcategoria == 3){
                                 mostrarcampos();
                                 actualizar();
                                 $('#pcantidad').focus();

@@ -21,7 +21,9 @@ class StockMinimoController extends Controller
         {
             //dd($request);
             $articulos = DB::table('articulo as art')
+                ->select('art.idarticulo','art.stock_minimo','art.stock','art.nombre','art.barcode','art.ultimoprecio',DB::raw('SUM(art.stock - art.stock_minimo) AS diferencia'))
                 ->whereNotNull('art.stock_minimo')
+                ->groupBy('art.idarticulo','art.stock_minimo','art.stock','art.nombre','art.barcode','art.ultimoprecio')
                 ->get();
             $articulosMinimosTotal = DB::table('articulo as art')
                 ->whereNotNull('art.stock_minimo')
@@ -31,12 +33,18 @@ class StockMinimoController extends Controller
                 ->get();
             $cantidad = 0;
             foreach ($diferencia as $a) {
-               if($a->stock_minimo >= $a->stock){
+               if($a->stock_minimo <= $a->stock){
                    $cantidad = $cantidad + 1;
                }
             }
-            $porcentaje = ($cantidad / $articulosMinimosTotal) * 100;
-            //dd($cantidad);
+            if($cantidad!=0){
+                $porcentaje = ($cantidad / $articulosMinimosTotal) * 100;
+            }
+            else {
+                $porcentaje = 0;
+            }
+
+     //       dd($articulos);
             return view('compras.stockminimo.index',compact('articulos','porcentaje'));
         }
     }
