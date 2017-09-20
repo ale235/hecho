@@ -534,12 +534,15 @@ class VentaController extends Controller
 
                 });
                 $row = 5;
-                $sheet->row($row, $columna[0]);
-                for($i = 1; $columna[$i][5] == 1; $i++){
-                    $row++;
-                    $sheet->row($row, $columna[$i]);
+                //for($j = 1; $columna[$j][5] == $j && count($columna) < $j; $j++){
+                    $sheet->row($row, $columna[0]);
+                    for($i = 1; $columna[$i][5] == 1; $i++){
+                        $row++;
+                        $sheet->row($row, $columna[$i]);
 
-                }
+                    }
+                //}
+
 
 
             });
