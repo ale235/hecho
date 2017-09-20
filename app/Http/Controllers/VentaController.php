@@ -463,10 +463,11 @@ class VentaController extends Controller
         $aux = DB::table('articulo as a')
             ->join('detalle_venta as dv', 'dv.idarticulo', '=', 'a.idarticulo')
             ->join('venta as v', 'v.idventa', '=', 'dv.idventa')
-            ->select('a.nombre', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
+            ->select('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
             ->whereBetween('v.fecha_hora', array($yesterday, $today))
-            ->groupBy('a.nombre', 'dv.precio_venta', 'v.fecha_hora')
+            ->groupBy('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora')
             ->orderBy('v.fecha_hora', 'desc')
+            ->orderBy('a.idcategoria', 'desc')
             ->get();
 
         $columna = [];
@@ -478,6 +479,7 @@ class VentaController extends Controller
         $fila0[2] = 'Cantidad';
         $fila0[3] = 'Precio total';
         $fila0[4] = 'Fecha';
+        $fila0[5] = 'Categoria';
         $columna[0] = $fila0;
 
         foreach ($aux as $a) {
@@ -488,6 +490,7 @@ class VentaController extends Controller
             $fila[2] = $a->cantidad;
             $fila[3] = $a->precio_total;
             $fila[4] = $a->fecha_hora;
+            $fila[5] = $a->idcategoria;
             $total = $total + $fila[3];
             $columna[$cont2] = $fila;
             $cont2 = $cont2 + 1;
@@ -498,21 +501,16 @@ class VentaController extends Controller
         $filanueva[2] = ' ';
         $filanueva[3] = $total;
         $filanueva[4] = ' ';
+        $filanueva[5] = ' ';
         $columna[$cont2] = $filanueva;
 
         Excel::create('Laravel Excel', function ($excel) use ($columna) {
 
             $excel->sheet('Excel sheet', function ($sheet) use ($columna) {
-//                $sheet->cells('A1:A5', function($cells) {
-//                    $cells->setFont(array(
-//                        'family'     => 'Calibri',
-//                        'size'       => '16',
-//                        'bold'       =>  true
-//                    ));
-//                    // manipulate the range of cells
-//
-//                });
+
+                $sheet->setAutoSize(true);
                 $sheet->setBorder('A1:F10', 'thin');
+                $sheet->setOrientation('landscape');
                 $mytime = Carbon::now('America/Argentina/Buenos_Aires');
                 if($mytime->hour < 16) {
                     $turno = "Mañana";
@@ -520,15 +518,29 @@ class VentaController extends Controller
                     $turno = "Tarde";
                 }
                 $sheet->mergeCells('A1:F1');
-                //$objDrawing = new PHPExcel_Worksheet_Drawing;
-                //$objDrawing->setPath(public_path('imagenes\articulos\peluche.jpg')); //your image path
-                //$objDrawing->setCoordinates('A1');
-
-                //$objDrawing->setWorksheet($sheet);
                 $today = Carbon::now('America/Argentina/Buenos_Aires')->format("d/m/Y");
-                $sheet->row(2, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
+                $row = 2;
+                $sheet->row($row, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
                 $sheet->mergeCells('A3:F3');
-                $sheet->fromArray($columna, null, 'A4', false, false);
+
+                $sheet->mergeCells('A4:F4');
+                $sheet->cell('A4', function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Kiosco');
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(15);
+                    $cell->setAlignment('center');
+
+                });
+                $row = 5;
+                $sheet->row($row, $columna[0]);
+                for($i = 1; $columna[$i][5] == 1; $i++){
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+
+                }
+
 
             });
 

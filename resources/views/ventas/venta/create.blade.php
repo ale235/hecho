@@ -335,6 +335,13 @@
                                 $('#pcantidad').focus();
                                 $('#bt_add').parent().parent().removeAttr("style");
                             }
+                            else if(data.idcategoria == 4){
+                                mostrarcampos();
+                                actualizar();
+                                $('#pcantidad').focus();
+                                $('#pprecio_venta').removeAttr("disabled");
+                                $('#bt_add').parent().parent().removeAttr("style");
+                            }
                             else{
                                 agregar();
                             }

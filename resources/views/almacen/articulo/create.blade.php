@@ -16,7 +16,7 @@
         @endif
         {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
         {{Form::token()}}
-        <div class="box-body">
+        <div class="box box-body">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
                 <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
@@ -99,8 +99,9 @@
             <br>
             <!-- /input-group -->
         </div>
+
         <!-- /.box-body -->
-        <div class="box-footer">
+        <div class="box box-footer">
             <button type="reset" class="btn btn-default">Cancelar</button>
             <button type="submit" class="btn btn-info pull-right">Cargar Artículo</button>
         </div>
