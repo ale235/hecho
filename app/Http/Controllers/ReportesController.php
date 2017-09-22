@@ -17,10 +17,15 @@ class ReportesController extends Controller
 {
     public function index(Request $request)
     {
-        $proveedores = DB::table('articulo')
-            ->select('proveedor',DB::raw('count(*) as total'))
-            ->groupBy('proveedor')
-            ->get();
+        $articulosSinStock = DB::table('articulo as art')
+            ->join('categoria as cat','art.idcategoria','=','cat.idcategoria')
+            //->select(DB::raw('COUNT(*) as cantidad'))
+            ->where('art.stock','<=','0')
+            ->where('art.idcategoria','!=','4')
+            ->where('art.estado','=','Activo')
+            ->count();
+        //dd($articulosSinStock);
+        //return $collection;
 
         $articulos =  DB::table('articulo as a')
             ->join('detalle_venta as dv','a.idarticulo','=','dv.idarticulo')
@@ -32,22 +37,21 @@ class ReportesController extends Controller
             ->groupBy('fecha_hora')
             ->get();
 
-        return view('reportes.grafico.index', ['proveedores'=> $proveedores,'articulos'=>$articulos, 'venta'=> $venta]);
+        return view('reportes.grafico.index', ['articulosSinStock'=> $articulosSinStock,'articulos'=>$articulos, 'venta'=> $venta]);
         //return view('home');
     }
 
-    public function articulosSinStock()
-    {
-        //Articulo mçàs vendido
-
-        $collection = DB::table('articulo')
-            ->select(DB::raw('COUNT(*) as cantidad'))
-            ->where('stock','<=','0')
-            ->where('estado','=','Activo')
-            ->get();
-
-        return $collection;
-    }
+//    public function articulosSinStock()
+//    {
+//
+//        $collection = DB::table('articulo')
+//            ->select(DB::raw('COUNT(*) as cantidad'))
+//            ->where('stock','<=','0')
+//            ->where('estado','=','Activo')
+//            ->get();
+//
+//        return $collection;
+//    }
 
     public function cajaDelDiaReportes()
     {

@@ -221,7 +221,7 @@
         });
     });
 
-function agregarprov() {
+    function agregarprov() {
     var proveedorselected = $('#idproveedores option:selected').text();
     if(ultimoid.length == 0){
         var d= ajustar(5,1);

@@ -36,9 +36,9 @@
                 </thead>
                 <tfoot>
                 <th></th>
-                <th><h4 id="total_compra">{{$venta->sum('total_compra')}}</h4></th>
-                <th><h4 id="total_venta">{{$venta->sum('total_venta')}}</h4></th>
-                <th><h4 id="total_venta_real">{{$venta->sum('total_venta_real')}}</h4></th>
+                {{--<th><h4 id="total_compra">{{$venta->sum('total_compra')}}</h4></th>--}}
+                {{--<th><h4 id="total_venta">{{$venta->sum('total_venta')}}</h4></th>--}}
+                {{--<th><h4 id="total_venta_real">{{$venta->sum('total_venta_real')}}</h4></th>--}}
                 </tfoot>
                 <tbody>
                 @foreach($venta as $det)

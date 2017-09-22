@@ -4,30 +4,6 @@
     <head>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript">
-
-
-
-
-//            google.charts.setOnLoadCallback(drawChart);
-
-            {{--function drawChart() {--}}
-
-                {{--var data = google.visualization.arrayToDataTable([--}}
-                    {{--['Proveedores', 'Cantidad de Artículos'],--}}
-                  {{--@foreach($proveedores as $prov)--}}
-                    {{--['{{$prov->proveedor}}',{{$prov->total}}],--}}
-                  {{--@endforeach--}}
-                {{--]);--}}
-
-                {{--var options = {--}}
-                    {{--title: 'Cantidad de Artículos vendidos por cada proveedor'--}}
-                {{--};--}}
-
-                {{--var chart = new google.visualization.PieChart(document.getElementById('piechart'));--}}
-
-                {{--chart.draw(data, options);--}}
-            {{--}--}}
-
         </script>
     </head>
     <body>
@@ -49,7 +25,7 @@
                 <!-- small box -->
                 <div class="small-box bg-aqua">
                     <div class="inner">
-                        <h3><span id="sin_stock"></span></h3>
+                        <h3><span> {{$articulosSinStock}}</span></h3>
 
                         <p>Sin stock</p>
                     </div>
@@ -124,17 +100,19 @@
             <div class="container col-lg-12 ">
                 <div class="panel panel-info">
                     <div class="panel-body">
-                        <div id="revenue-chart" style="position: relative; height: 300px;"></div>
+                        <div id="myChart" style="height: 100%;width: 100%;"></div>
+                        <div id='myChart2'></div>
                     </div>
                 </div>
             </div>
-            <div class="container col-lg-12 ">
-                <div class="panel panel-info">
-                    <div class="panel-body">
-                        <div id="graph" style="position: relative; height: 300px;"></div>
-                    </div>
-                </div>
-            </div>
+            {{--<div class="container col-lg-12 ">--}}
+                {{--<div class="panel panel-info">--}}
+                    {{--<div class="panel-body">--}}
+                        {{--<div id="graph" style="position: relative; height: 300px;"></div>--}}
+                        {{--<div id="myChart"></div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
             <!-- Left col -->
             {{--<section class="col-lg-12 connectedSortable">--}}
                 {{--<!-- Custom tabs (Charts with tabs)-->--}}
@@ -164,28 +142,71 @@
     </section>
     </body>
     </html>
-    {{--<canvas id="projects-graph" width="1000" height="400"></canvas>--}}
 
 @endsection
 @push('scripts')
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 <script>
-    Morris.Bar({
-        element: 'graph',
-        data: [
-            {x: '2011 Q1', y: 3, z: 2, a: 3},
-            {x: '2011 Q2', y: 2, z: null, a: 1},
-            {x: '2011 Q3', y: 0, z: 2, a: 4},
-            {x: '2011 Q4', y: 2, z: 4, a: 3}
-        ],
-        xkey: 'x',
-        ykeys: ['y', 'z', 'a'],
-        labels: ['Y', 'Z', 'A']
-    }).on('click', function(i, row){
-        console.log(i, row);
+//    zingchart.render({
+//        id: 'myChart',
+//        data: {
+//            type: "bar",
+//            plotarea: {
+//                adjustLayout: true
+//            },
+//            scaleX: {
+//                label: {
+//                    text: "Here is a category scale"
+//                },
+//                labels: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug"]
+//            },
+//            series: [{
+//                values: [20, 40, 25, 50, 15, 45, 33, 34]
+//            }, {
+//                values: [5, 30, 21, 18, 59, 50, 28, 33]
+//            }]
+//        }
+//    });
+</script>
+<script>
+    $.ajax({
+        type: 'get',
+        url: '{!!URL::to('ventasPorProductos')!!}',
+        success: function (data) {
+        console.log(data);
+        var labels = data.map(function (x) {
+           return x.nombre;
+        });
+        var dataChart = data.map(function (x) {
+            return x.cantidadTotal;
+        });
+            zingchart.render({
+                id: 'myChart',
+                data: {
+                    type: "bar",
+                    plotarea: {
+                        adjustLayout: true
+                    },
+                    scaleX: {
+                        label: {
+                            text: "Productos más vendidos"
+                        },
+                        labels: labels
+                    },
+                    series: [{
+                        values: dataChart
+                    }]
+                }
+            });
+        },
+        error: function () {
+
+        }
     });
+
 </script>
 <script>
     $(document).ready(function () {
@@ -220,55 +241,6 @@
             success: function (data) {
                 //console.log('success');
                 $("#caja_de_ayer").text(data[0].total);
-            },
-            error: function () {
-
-            }
-        });
-
-        $.ajax({
-            type: 'get',
-            url: '{!!URL::to('ventasPorProductos')!!}',
-            success: function (data) {
-                //console.log('success');
-                google.charts.load('current', {'packages':['corechart','bar']});
-
-                google.charts.setOnLoadCallback(function(){ drawBar(data) });
-
-
-
-                function drawBar(data) {
-                    var output =    data.map(function(obj) {
-                        return Object.keys(obj).sort().map(function(key) {
-                            return obj[key];
-                        });
-                    });
-//                    output.forEach(function(element) {
-//                        element[0] = parseInt(element[0]);
-////                        element.reverse();
-//                    });
-                    output.reverse();
-
-                    output.unshift(['Articulo','Cantidad']);
-                    var datav = new google.visualization.arrayToDataTable(output);
-
-                    var options = {
-                        title: 'Productos más vendidos',
-                        legend: { position: 'none' },
-//                        chart: { subtitle: 'popularity by percentage' },
-                        axes: {
-                            x: {
-//                                0: { side: 'top', label: 'Productos más vendidos'} // Top x-axis.
-                            }
-                        },
-                        bar: { groupWidth: "100%" }
-                    };
-
-                    var chart = new google.charts.Bar(document.getElementById('revenue-chart'));
-                    // Convert the Classic options to Material options.
-                    chart.draw(datav, google.charts.Bar.convertOptions(options));
-                };
-
             },
             error: function () {
 
