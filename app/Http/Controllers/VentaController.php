@@ -646,7 +646,7 @@ class VentaController extends Controller
                 $sheet->cell('A'.$row, function($cell) {
 
                     // manipulate the cell
-                    $cell->setValue('Kiosco');
+                    $cell->setValue('Bebidas');
                     $cell->setAlignment('center');
 
                 });

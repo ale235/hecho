@@ -106,6 +106,7 @@
                     <ul class="treeview-menu">
                         <li><a href="{{ url('compras/ingreso') }}">Ingreso</a></li>
                         <li><a href="{{ url('compras/proveedor') }}">Proveedor</a></li>
+                        <li><a href="{{ url('compras/stockminimo') }}">Stock Mínimo</a></li>
                     </ul>
                 </li>
                 @endif

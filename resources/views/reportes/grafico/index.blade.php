@@ -187,8 +187,16 @@
                 id: 'myChart',
                 data: {
                     type: "bar",
+                    plot: {
+                        "tooltip":{ //Standard Tooltips
+                            "text":"%kl se vendió <br>%v.",
+                            "placement":"node:top",
+                            "padding":"10%",
+                            "border-radius":"5px"
+                        }
+                    },
                     plotarea: {
-                        adjustLayout: true
+                        adjustLayout: true,
                     },
                     scaleX: {
                         label: {
