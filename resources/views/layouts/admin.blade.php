@@ -104,7 +104,7 @@
                 <li class="treeview">
                     <a href="#"><i class='fa fa-link'></i> <span>Compras</span> <i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
-                        <li><a href="{{ url('compras/ingreso') }}">Ingreso</a></li>
+                        {{--<li><a href="{{ url('compras/ingreso') }}">Ingreso</a></li>--}}
                         <li><a href="{{ url('compras/proveedor') }}">Proveedor</a></li>
                         <li><a href="{{ url('compras/stockminimo') }}">Stock Mínimo</a></li>
                     </ul>

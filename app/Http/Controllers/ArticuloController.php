@@ -132,7 +132,8 @@ class ArticuloController extends Controller
             else{
                 $ultimo =Articulo::orderBy('idarticulo','desc')->first();
                 $articulo->idcategoria = $request->get('idcategoria');
-                $articulo->codigo = $request->get('idproveedores') . $request->get('codigo');
+                //dd($request);
+                $articulo->codigo = $request->get('idproveedores') . ($ultimo->idarticulo + 1);
                 $articulo->proveedor = $request->get('idproveedores');
                 $articulo->nombre = $request->get('nombre');
                 $articulo->stock = 0;
@@ -244,8 +245,20 @@ class ArticuloController extends Controller
 
     public function destroy($id)
     {
+
         $articulo = Articulo::findOrFail($id);
+        $detalle_ingreso= DetalleIngreso::where('idarticulo',$id)->get();
+        foreach ($detalle_ingreso as $di){
+            $precios = Precio::where('idarticulo', $di->idarticulo)->get();
+            foreach ($precios as $p){
+                $p->delete();
+            }
+
+            $di->delete();
+        }
+
         $articulo->delete();
+
         return Redirect::to('almacen/articulo');
     }
 
