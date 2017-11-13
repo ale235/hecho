@@ -54,6 +54,7 @@
                         @endforeach
                     </select>
                     <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
+                    <input type="hidden" name="idproveedor" id="idproveedor" value="{{old('idproveedor')}}">
                     <span class="input-group-btn">
                         <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
                     </span>
@@ -72,21 +73,21 @@
 
             <div class="input-group">
                 <span id="inputdelexistencia" style="display: none" class="input-group-addon">Hay <span id="existencia"></span> artículos en Stock</span>
-                <input type="number" name="pcantidad" id="pcantidad" class="form-control" onkeyup="actualizar()" placeholder="Cantidad">
+                <input type="number" name="pcantidad" id="pcantidad" value="{{old('pcantidad')}}" class="form-control" onkeyup="actualizar()" placeholder="Cantidad">
                 <span class="input-group-addon">Cantidad de Artículos a Ingresar al Stock</span>
             </div>
             <br>
 
             <div class="input-group">
                 <span class="input-group-addon">$</span>
-                <input type="number" name="pprecio_compra_costo" id="pprecio_compra_costo" class="form-control" onkeyup="actualizar()" placeholder="Costo">
+                <input type="number" name="pprecio_compra_costo" id="pprecio_compra_costo" value="{{old('pprecio_compra_costo')}}" class="form-control" onkeyup="actualizar()" placeholder="Costo">
                 <span class="input-group-addon">Costo del Artículo</span>
             </div>
             <br>
 
             <div class="input-group">
                 <span class="input-group-addon">%</span>
-                <input type="number" name="pporcentaje_venta" id="pporcentaje_venta" class="form-control" onkeypress="return valida(event)" onkeyup="actualizar()" placeholder="Porcentaje de Venta">
+                <input type="number" name="pporcentaje_venta" id="pporcentaje_venta" value="{{old('pporcentaje_venta')}}" class="form-control" onkeypress="return valida(event)" onkeyup="actualizar()" placeholder="Porcentaje de Venta">
                 <span class="input-group-addon">Porcentaje de Venta del Artículo</span>
             </div>
             <br>
@@ -112,31 +113,13 @@
 
 @push ('scripts')
 <script>
-    var casa = '<?php echo $articulos ?>';
-    var ultimoid = null;
     $("#barcode").keypress(function(event){
         if (event.which == '10' || event.which == '13') {
             event.preventDefault();
         }
     });
     $(document).ready(function () {
-/*        articulo = $('#idproveedores option:selected').text();
-        $('#idproveedores').change(function () {
-            agregarprov();
-        });*/
-
-/*        $.ajax({
-            type:'get',
-
-            data:{'codigo':cat_id},
-            success:function(data){
-                $('#idproveedorsolo').val(data[0].idpersona);
-
-            },
-            error:function(){
-
-            }
-        });*/
+        $('#idproveedores option[value="'+$('#idproveedor').val()+'"]').attr('selected', 'selected');
 
         $(document).on('change','#idproveedores',function(){
             // console.log("hmm its change");
@@ -149,6 +132,7 @@
                 data:{'codigo':cat_id},
                 success:function(data){
                     $('#idproveedorsolo').val(data[0].idpersona);
+                    $('#idproveedor').val(data[0].codigo)
 
                 },
                 error:function(){
@@ -160,15 +144,16 @@
                 url:'{!!URL::to('buscarUltimoId')!!}',
                 data:{'codigo':cat_id},
                 success:function(data){
-                    //$('#idproveedorsolo').val(data[0].idpersona);
-                    if(data.length==0){
-                        ultimoid = 0;
-                    }else{
-                        ultimoid = data[0].idarticulo;
-                        console.log(data)
+                    if (data.codigo == null) {
+                        var d = ajustar(5, 1);
+                        $('#codigo').val(d);
                     }
-
-                    agregarprov()
+                    else {
+                        var a = data.codigo.substr(data.codigo.length - 5);
+                        var b = parseInt(a) + 1;
+                        var c = ajustar(5, b);
+                        $('#codigo').val(c);
+                    }
 
                 },
                 error:function(){
@@ -210,7 +195,7 @@
                     $('#pporcentaje_venta').val(data.porcentaje);
                     $('#pprecio_venta_esperado').val(data.precio_venta);
                     $('#idproveedorsolo').val(data.idpersona);
-
+                    $("#idproveedor").val(data.proveedor);
 
                 },
                 error:function(){

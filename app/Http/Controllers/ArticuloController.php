@@ -43,7 +43,6 @@ class ArticuloController extends Controller
             else $query3 = trim($request->get('selectText'));
             $articulos = DB::table('articulo as art')
                 ->join('categoria as cat', 'art.idcategoria', '=', 'cat.idcategoria')
-//                ->join('precio as p', 'art.idarticulo', '=', 'p.idarticulo')
                 ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'cat.nombre as categoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode')
                 ->where('art.estado','=',$query3)
                 ->where([
@@ -52,7 +51,6 @@ class ArticuloController extends Controller
                     ['art.estado', '=', $query3],
                 ])
                 ->orderBy('art.idarticulo','desc')
-//                ->orderBy('p.idprecio','desc')
                 ->paginate('30');
 
             return view('almacen.articulo.index', ['articulos'=>$articulos,'searchText'=>$query, 'searchText2'=>$query2, 'estados'=>$estados, 'selectText'=>$query3, 'categorias'=>$categorias]);
@@ -352,7 +350,7 @@ class ArticuloController extends Controller
 
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
-        $p=DB::table('persona as p')->select('p.idpersona')->where('p.codigo','=', $request->codigo)->get();
+        $p=DB::table('persona as p')->select('p.idpersona','p.codigo')->where('p.codigo','=', $request->codigo)->get();
         return response()->json($p);
     }
 
@@ -361,10 +359,10 @@ class ArticuloController extends Controller
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
         $p=DB::table('articulo as art')
-            ->select('art.idarticulo')
+            ->select('art.codigo')
             ->where('art.proveedor','=', $request->codigo)
-            ->orderBy('art.idarticulo','desc')
-            ->get();
+            ->orderBy('art.codigo','desc')
+            ->first();
         return response()->json($p);
     }
 
