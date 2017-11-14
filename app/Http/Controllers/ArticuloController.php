@@ -131,7 +131,14 @@ class ArticuloController extends Controller
                 $ultimo =Articulo::orderBy('idarticulo','desc')->first();
                 $articulo->idcategoria = $request->get('idcategoria');
                 //dd($request);
-                $articulo->codigo = $request->get('idproveedores') . ($ultimo->idarticulo + 1);
+                $numero = Articulo::where('proveedor',$request->get('idproveedores'))->orderBy('codigo','desc')->first();
+                if($numero){
+                    $ultimoNumeroCodigo = substr($numero->codigo, -5);
+                    $ultimoNumeroCodigo = (int)$ultimoNumeroCodigo;
+                }
+                else $ultimoNumeroCodigo = 0;
+                //dd($numero);
+                $articulo->codigo = $request->get('idproveedores') . str_pad($ultimoNumeroCodigo+1, 5, "0",  STR_PAD_LEFT);
                 $articulo->proveedor = $request->get('idproveedores');
                 $articulo->nombre = $request->get('nombre');
                 $articulo->stock = 0;

@@ -42,6 +42,7 @@ Route::get('/articulosSinStock','ReportesController@articulosSinStock');
 Route::get('/cajaDelDiaReportes','ReportesController@cajaDelDiaReportes');
 Route::get('/cajaDeAyer','ReportesController@cajaDeAyer');
 Route::get('/ventasPorProductos','ReportesController@ventasPorProductos');
+Route::get('/ventasDelAno','ReportesController@ventasDelAno');
 Route::get('/proveedorQueMasProductosVende','ReportesController@proveedorQueMasProductosVende');
 Route::get('/ganancias','ReportesController@ganancias');
 Route::get('/volveracero/{id}','ReportesController@volveracero');
@@ -83,5 +84,13 @@ Route::get('/reportes/cajadeayer', 'ReportesController@getCajaDeAyer');
 Route::get('/reportes/cajadehoy', 'ReportesController@getCajaDeHoy');
 Route::get('/reportes/detallestock', 'ReportesController@getDetalleStock');
 Route::get('/reportes/detalleganancias', 'ReportesController@getDetalleGanancias');
+
+Route::get('/precios/porarticulo', 'PrecioController@getPorArticulo');
+
+Route::post('/precios/porarticulo', 'PrecioController@storeArticulo');
+
+Route::get('/precios/porfamilia', 'PrecioController@getPorFamilia');
+
+Route::post('/precios/porfamilia', 'PrecioController@storeFamilia');
 
 Auth::routes();

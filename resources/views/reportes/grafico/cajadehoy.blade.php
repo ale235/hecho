@@ -35,7 +35,7 @@
                     </tbody>
                 </table>
             </div>
-            {!! $detalle_venta_hoy->render() !!}
+            {{--{!! $detalle_venta_hoy->render() !!}--}}
         </div>
     </div>
 @endsection

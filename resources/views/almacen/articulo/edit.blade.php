@@ -47,20 +47,20 @@
             </div>
             <br>
 
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-addon">Proveedor</span>
-                    <select name="idproveedores" class="form-control">
-                        @foreach($proveedores as $prov)
-                            <option value="{{$prov->idpersona}}">{{$prov->codigo}}</option>
-                        @endforeach
-                    </select>
-                    <span class="input-group-btn">
-                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
-                    </span>
-                </div>
-            </div>
-            <br>
+            {{--<div class="form-group">--}}
+                {{--<div class="input-group">--}}
+                    {{--<span class="input-group-addon">Proveedor</span>--}}
+                    {{--<select name="idproveedores" class="form-control">--}}
+                        {{--@foreach($proveedores as $prov)--}}
+                            {{--<option value="{{$prov->idpersona}}">{{$prov->codigo}}</option>--}}
+                        {{--@endforeach--}}
+                    {{--</select>--}}
+                    {{--<span class="input-group-btn">--}}
+                        {{--<a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>--}}
+                    {{--</span>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--<br>--}}
 
             <div style="display: none" class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
                 <div class="from-group">

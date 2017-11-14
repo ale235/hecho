@@ -37,32 +37,32 @@ class PrecioController extends Controller
 
     public function store(Request $request)
     {
-        try
-        {
-            DB::beginTransaction();
-             $idarticulo = $request->get('idarticulo');
-             $porcentaje = $request->get('porcentaje');
-             $precio_compra = $request->get('precio_compra');
-             $mytime= Carbon::now('America/Argentina/Buenos_Aires');
-             $precio = new Precio();
-             $precio->idarticulo = $idarticulo;
-             $precio->porcentaje = $porcentaje;
-             $precio->fecha = $mytime->toDateTimeString();
-             $precio->precio_compra = $precio_compra;
-             $precio->precio_venta = (($porcentaje / 100) + 1) * $precio_compra;
-             $precio->save();
-             $articulo = Articulo::findOrFail($idarticulo);
-             $articulo->ultimoprecio = $precio->precio_venta;
-             $articulo->update();
-
-            DB::commit();
-        }
-        catch(\Exception $e)
-        {
-            DB::rollback();
-        }
-
-        return Redirect::to('precios/actualizar');
+//        try
+//        {
+//            DB::beginTransaction();
+//             $idarticulo = $request->get('idarticulo');
+//             $porcentaje = $request->get('porcentaje');
+//             $precio_compra = $request->get('precio_compra');
+//             $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+//             $precio = new Precio();
+//             $precio->idarticulo = $idarticulo;
+//             $precio->porcentaje = $porcentaje;
+//             $precio->fecha = $mytime->toDateTimeString();
+//             $precio->precio_compra = $precio_compra;
+//             $precio->precio_venta = (($porcentaje / 100) + 1) * $precio_compra;
+//             $precio->save();
+//             $articulo = Articulo::findOrFail($idarticulo);
+//             $articulo->ultimoprecio = $precio->precio_venta;
+//             $articulo->update();
+//
+//            DB::commit();
+//        }
+//        catch(\Exception $e)
+//        {
+//            DB::rollback();
+//        }
+//
+//        return Redirect::to('precios/actualizar');
     }
 
     public function show($id)
@@ -133,6 +133,105 @@ class PrecioController extends Controller
             ->get();
 
         return response()->json($data);//then sent this data to ajax success
+    }
+
+    public function getPorArticulo()
+    {
+        $proveedores=DB::table('persona')
+            ->where('tipo_persona','=','Proveedor')
+            ->where('estado','=','Activo')
+            ->orderBy('codigo','asc')
+            ->get();
+        return view('precios.actualizar.porarticulo',['proveedores'=>$proveedores]);
+    }
+
+    public function getPorFamilia()
+    {
+        $proveedores=DB::table('persona')
+            ->where('tipo_persona','=','Proveedor')
+            ->where('estado','=','Activo')
+            ->orderBy('codigo','asc')
+            ->get();
+        return view('precios.actualizar.porfamilia',['proveedores'=>$proveedores]);
+    }
+
+    public function storeArticulo(Request $request)
+    {
+        //dd($request);
+        try
+        {
+            DB::beginTransaction();
+            $idarticulo = $request->get('pidarticulo');
+            $porcentaje = $request->get('nuevo_porcentaje1');
+            $nuevo_precio_compra = $request->get('nuevo_precio_compra');
+            $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+            $precio = new Precio();
+            $precio->idarticulo = $idarticulo;
+            $precio->porcentaje = $porcentaje;
+            $precio->fecha = $mytime->toDateTimeString();
+            $precio->precio_compra = $nuevo_precio_compra;
+            $precio->precio_venta = (($porcentaje / 100) + 1) * $nuevo_precio_compra;
+            $precio->save();
+            $articulo = Articulo::findOrFail($idarticulo);
+            $articulo->ultimoprecio = $precio->precio_venta;
+            $articulo->update();
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
+
+        return Redirect::to('precios/actualizar');
+    }
+
+    public function storeFamilia(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+            $cont = 0;
+            $idarticulo = $request->get('idarticulo');
+            $porcentaje = $request->get('nuevo_porcentaje');
+            $nuevo_precio_compra = $request->get('nuevo_precio_compra');
+            $porcentajeParaColumna = $request->get('porcentajeporcolumna');
+            $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+            while($cont < count($idarticulo)){
+
+                $ultimoprecio = DB::table('precio')
+                    ->where('idarticulo','=', $idarticulo[$cont])
+                    ->orderBy('idarticulo','desc')
+                    ->orderBy('idprecio','desc')
+                    ->first();
+                if($porcentaje[$cont] != $ultimoprecio->porcentaje || $porcentajeParaColumna != null || $nuevo_precio_compra[$cont] != $ultimoprecio->precio_compra) {
+                    $precio = new Precio();
+                    $precio->idarticulo = $idarticulo[$cont];
+                    $precio->porcentaje = $porcentaje[$cont];
+                    $precio->fecha = $mytime->toDateTimeString();
+                    if($porcentajeParaColumna!= null || $nuevo_precio_compra[$cont] != $ultimoprecio->precio_compra){
+
+                        $precio->precio_compra = $nuevo_precio_compra[$cont];
+                    }
+                    else{
+                        $precio->precio_compra = $ultimoprecio->precio_compra;
+                    }
+                    $precio->precio_venta = (($porcentaje[$cont] / 100) + 1) * $nuevo_precio_compra[$cont];
+                    $precio->save();
+                    $articulo = Articulo::findOrFail($idarticulo[$cont]);
+                    $articulo->ultimoprecio = $precio->precio_venta;
+                    $articulo->update();
+                }
+                $cont= $cont+1;
+            }
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
+
+        return Redirect::to('precios/actualizar');
     }
 
 

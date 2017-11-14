@@ -219,7 +219,8 @@ class ReportesController extends Controller
             ->whereDay('v.fecha_hora',$mytime->day)
             ->whereMonth('v.fecha_hora',$mytime->month)
             ->whereYear('v.fecha_hora',$mytime->year)
-            ->paginate(30);
+//            ->paginate(30);
+            ->get();
 
         return view('reportes.grafico.cajadehoy', compact('detalle_venta_hoy'));;
     }
@@ -266,6 +267,17 @@ class ReportesController extends Controller
         }
 
         return view('reportes.grafico.detalleganancias', ['venta'=> $venta]);
+    }
+
+    public function ventasDelAno()
+    {
+
+        $collection = DB::table('venta')
+            ->select(DB::raw('SUM(total_venta_real) as total'))
+//            ->orderBy('desc')
+            ->groupBy(DB::raw("month(fecha_hora)"))
+            ->get();
+        return $collection;
     }
 
 }

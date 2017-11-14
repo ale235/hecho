@@ -105,6 +105,14 @@
                     </div>
                 </div>
             </div>
+            <div class="container col-lg-12 ">
+                <div class="panel panel-info">
+                    <div class="panel-body">
+                        <div id="myChart3" style="height: 100%;width: 100%;"></div>
+                        <div id='myChart2'></div>
+                    </div>
+                </div>
+            </div>
             {{--<div class="container col-lg-12 ">--}}
                 {{--<div class="panel panel-info">--}}
                     {{--<div class="panel-body">--}}
@@ -190,7 +198,7 @@
                     plot: {
                         "tooltip":{ //Standard Tooltips
                             "text":"%kl se vendió <br>%v.",
-                            "placement":"node:top",
+                            "placement":"node:bottom",
                             "padding":"10%",
                             "border-radius":"5px"
                         }
@@ -209,6 +217,58 @@
                     }]
                 }
             });
+        },
+        error: function () {
+
+        }
+    });
+    totalSum = [];
+    $.ajax({
+        type: 'get',
+        url: '{!!URL::to('ventasDelAno')!!}',
+        success: function (data) {
+
+//            Object.keys(data).forEach(function(key,index,totalSum) {
+//                // key: the name of the object key
+//                // index: the ordinal position of the key within the object
+//                //console.log(data[key])
+//                sum = data[key].map(function(item){
+//                    //console.log(item)
+//                    return item.total_venta_real;
+//                });
+//                totalSum[index] = sum
+//                console.log(totalSum);
+//            });
+            var array2 = data.map(function (x) {
+                return parseInt(x.total);
+            });
+
+                zingchart.render({
+        id: 'myChart3',
+        data: {
+            type: "bar",
+            plot: {
+                "tooltip":{ //Standard Tooltips
+                    "text":"en %kl las ventas fueron de  <br>$%v.",
+                    "placement":"node:bottom",
+                    "padding":"10%",
+                    "border-radius":"5px"
+                }
+            },
+            plotarea: {
+                adjustLayout: true
+            },
+            scaleX: {
+                label: {
+                    text: "Here is a category scale"
+                },
+                labels: ["Julio", "Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+            },
+            series: [{
+                values: array2
+            }]
+        }
+    });
         },
         error: function () {
 

@@ -91,12 +91,18 @@ class ProveedorController extends Controller
 
     public function destroy($id)
     {
+        try
+        {
+            DB::beginTransaction();
         $persona = Persona::findOrFail($id);
 
-        if($persona->estado ==  'Inactivo')
-            $persona->estado = 'Activo';
-        else $persona->estado = 'Inactivo';
-        $persona->update();
+        $persona->delete();
+                        DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
         return Redirect::to('compras/proveedor');
     }
 
