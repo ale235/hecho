@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
 use ideas\Http\Requests\ArticuloFormRequest;
+use ideas\Http\Requests\ArticuloFormRequest2;
 use ideas\Articulo;
 use ideas\Persona;
 use ideas\Precio;
@@ -217,7 +218,7 @@ class ArticuloController extends Controller
         return view('almacen.articulo.edit',['articulo'=>$articulo,'categorias'=>$categorias,'proveedores'=>$proveedores]);
     }
 
-    public function update(ArticuloFormRequest $request,$id)
+    public function update(ArticuloFormRequest2 $request,$id)
     {
         try
         {
