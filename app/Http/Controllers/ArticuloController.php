@@ -79,6 +79,8 @@ class ArticuloController extends Controller
     {
         try
         {
+
+            dd($request);
         DB::beginTransaction();
         $articulo = new Articulo;
             if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
@@ -393,5 +395,23 @@ class ArticuloController extends Controller
            return response()->json(['error' => 'Error msg'], 404);
        }
     }
+
+    public function getPorCodigo()
+    {
+        $articulos = DB::table('articulo as art')
+            ->select('art.idarticulo','art.codigo','art.proveedor')
+            ->get();
+
+
+        $proveedores = DB::table('persona')
+            ->where('tipo_persona','=','Proveedor')
+            ->where('estado','=','Activo')
+            ->get();
+        $categorias=DB::table('categoria')
+            ->where('condicion','=','1')
+            ->get();
+        return view('almacen.articulo.createPorCodigo', ['categorias'=>$categorias, 'proveedores'=>$proveedores, 'articulos'=>$articulos]);
+    }
+
 
 }

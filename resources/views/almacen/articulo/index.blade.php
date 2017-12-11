@@ -7,6 +7,10 @@
                 <span class="badge bg-green"></span>
                 <i class="fa fa-barcode"></i> Ingresar Producto
             </a>
+            <a  href="{{URL::action('ArticuloController@getPorCodigo')}}" class="btn btn-app pull-right">
+                <span class="badge bg-green"></span>
+                <i class="fa fa-barcode"></i> Ingresar Producto222
+            </a>
             <a class="btn btn-app pull-right">
                 <span class="badge bg-green"></span>
                 <i class="fa fa-file-excel-o"></i> Exportar Resultado

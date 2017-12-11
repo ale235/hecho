@@ -240,75 +240,6 @@
 
             $('#pidarticulo').focus();
 
-            $(document).on('change', '.lista-proveedores', function () {
-                // console.log("hmm its change");
-
-                var cat_id = $(this).val();
-                var input = cat_id.split('+')
-                cat_id = input[1];
-                // console.log(cat_id);
-                var div = $(this).parent();
-
-                var op = " ";
-
-                $.ajax({
-                    type: 'get',
-                    url: '{!!URL::to('buscarArticuloPorProveedor')!!}',
-                    data: {'codigo': cat_id},
-                    success: function (data) {
-                        //console.log('success');
-
-                        console.log(data);
-
-                        //console.log(data.length);
-                        op += '<option value="0" selected disabled>Elegí un artículo</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            op += '<option value="' + data[i].idarticulo + '">' + data[i].codigo + ' ' + data[i].nombre + '</option>';
-                        }
-                        div.parent().parent().parent().parent().parent().find('.nombre-articulo').html(" ");
-                        div.parent().parent().parent().parent().parent().find('.nombre-articulo').append(op);
-//                    div.find('.nombre-articulo').html(" ");
-//                    div.find('.nombre-articulo').append(op);
-//                    alert($(".lista-proveedores").prop('selectedIndex'));
-                        //div.parent().parent().parent().parent().parent().find('.nombre-articulo').unbind('change')
-                    },
-                    error: function () {
-
-                    }
-                });
-            });
-
-            $(document).on('change', '.nombre-articulo', function () {
-                // console.log("hmm its change");
-
-                var cat_id = $(this).val();
-                var div = $(this).parent();
-
-                var op = " ";
-
-                $.ajax({
-                    type: 'get',
-                    url: '{!!URL::to('buscarPrecioArticuloVentas')!!}',
-                    data: {'id': cat_id},
-                    success: function (data) {
-                        //console.log('success');
-
-                        console.log(data);
-
-                        $('#pprecio_venta').val(data[0].precio_venta);
-                        $('#pidarticulo').val(data.codigo);
-                        $('#pcantidad').val(1);
-                        $('#pidarticuloidarticulo').val(data.idarticulo);
-                        $('#pidarticulonombre').val(data.nombre);
-                        agregar();
-
-                    },
-                    error: function () {
-
-                    }
-                });
-            });
-
             $(document).on('keyup keydown', '#pidarticulo', function () {
                 // console.log("hmm its change");
 
@@ -369,11 +300,6 @@
 
             });
 
-            $(document).on('change', '#selectpidarticulo', function () {
-                $('#pidarticulo').val($('#selectpidarticulo').val());
-//            $('#pidarticulo').trigger(jQuery.Event('keydown', { keycode: 13 }));
-                $('#myModal2').modal('show');
-            });
         });
         var cont = 0;
         total = 0;
