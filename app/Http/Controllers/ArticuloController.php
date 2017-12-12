@@ -79,8 +79,6 @@ class ArticuloController extends Controller
     {
         try
         {
-
-            dd($request);
         DB::beginTransaction();
         $articulo = new Articulo;
             if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
@@ -140,7 +138,6 @@ class ArticuloController extends Controller
                     $ultimoNumeroCodigo = (int)$ultimoNumeroCodigo;
                 }
                 else $ultimoNumeroCodigo = 0;
-                //dd($numero);
                 $articulo->codigo = $request->get('idproveedores') . str_pad($ultimoNumeroCodigo+1, 5, "0",  STR_PAD_LEFT);
                 $articulo->proveedor = $request->get('idproveedores');
                 $articulo->nombre = $request->get('nombre');
@@ -201,6 +198,119 @@ class ArticuloController extends Controller
       {
             DB::rollback();
         }
+        return Redirect::to('almacen/articulo?selectText=Activo');
+    }
+
+    public function storePorCodigo(ArticuloFormRequest $request)
+    {
+//        try
+//        {
+//
+//            DB::beginTransaction();
+            if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
+                $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
+                $articulo->idcategoria = $request->get('idcategoria');
+                $articulo->codigo =$request->get('codigo');
+                $articulo->proveedor = $request->get('idproveedor');
+                $articulo->nombre = $request->get('nombre');
+                $articulo->descripcion = $request->get('descripcion');
+                $articulo->estado = 'Activo';
+
+                $articulo->save();
+                //$articulo->stock=$articulo->stock + $request->get('pcantidad');
+                //dd($articulo);
+
+                $ingreso = new Ingreso;
+                $ingreso->idproveedor = $request->get('idproveedorsolo');
+                $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+                $ingreso->fecha_hora=$mytime->toDateTimeString();
+                $ingreso->estado='Activo';
+                $ingreso->save();
+
+                $idarticulo = $articulo->idarticulo;
+                $cantidad = $request->get('pcantidad');
+                $precio_compra_costo = $request->get('pprecio_compra_costo');
+                $porcentaje_venta = $request->get('pporcentaje_venta');
+
+                $detalle = new DetalleIngreso();
+                $detalle->idingreso = $ingreso->idingreso;
+                $detalle->idarticulo = $idarticulo;
+                $detalle->cantidad = $cantidad;
+                $detalle->precio_compra_costo = $precio_compra_costo;
+                $detalle->porcentaje_venta = $porcentaje_venta;
+                $detalle->save();
+
+                $precio = new Precio();
+                $precio->idarticulo = $idarticulo;
+                $precio->porcentaje = $porcentaje_venta;
+                $precio->fecha = $mytime->toDateTimeString();
+                $precio->precio_compra = $precio_compra_costo;
+                $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $precio->save();
+
+                //$articulo = Articulo::findOrFail($idarticulo);
+                $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $articulo->stock = $articulo->stock + $cantidad;
+                $articulo->update();
+            }
+            else{
+                $articulo = new Articulo;
+                $articulo->idcategoria = $request->get('idcategoria');
+                $articulo->codigo = $request->get('codigo');
+                $articulo->proveedor = $request->get('idproveedores');
+                $articulo->nombre = $request->get('nombre');
+                $articulo->stock = 0;
+                $articulo->descripcion = $request->get('descripcion');
+                $articulo->estado = 'Activo';
+                $articulo->barcode = $request->get('barcode');
+                $articulo->save();
+                $articulo->barcode = $articulo->idarticulo;
+                $articulo->save();
+                $ingreso = new Ingreso;
+//          ieces = explode("+", $request->get('idproveedor'));
+//          ngreso->idproveedor = $pieces[0];
+                $ingreso->idproveedor = $request->get('idproveedorsolo');
+                $mytime= Carbon::now('America/Argentina/Buenos_Aires');
+
+                $ingreso->fecha_hora=$mytime->toDateTimeString();
+                $ingreso->estado='Activo';
+                $ingreso->save();
+
+                $idarticulo = $articulo->idarticulo;
+                $cantidad = $request->get('pcantidad');
+                $precio_compra_costo = $request->get('pprecio_compra_costo');
+                $porcentaje_venta = $request->get('pporcentaje_venta');
+
+                $detalle = new DetalleIngreso();
+                $detalle->idingreso = $ingreso->idingreso;
+                $detalle->idarticulo = $idarticulo;
+                $detalle->cantidad = $cantidad;
+                $detalle->precio_compra_costo = $precio_compra_costo;
+                $detalle->porcentaje_venta = $porcentaje_venta;
+                $detalle->save();
+
+                $precio = new Precio();
+                $precio->idarticulo = $idarticulo;
+                $precio->porcentaje = $porcentaje_venta;
+                $precio->fecha = $mytime->toDateTimeString();
+                $precio->precio_compra = $precio_compra_costo;
+                $precio->precio_venta = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $precio->save();
+
+                $articulo = Articulo::findOrFail($idarticulo);
+                $articulo->ultimoprecio = (($porcentaje_venta / 100) + 1) * $precio_compra_costo;
+                $articulo->stock = $articulo->stock + $cantidad;
+                $articulo->update();
+            }
+
+
+            DB::commit();
+//        }
+//        catch(\Exception $e)
+//        {
+//            DB::rollback();
+//        }
         return Redirect::to('almacen/articulo?selectText=Activo');
     }
 
@@ -385,6 +495,7 @@ class ArticuloController extends Controller
             ->join('persona as person','art.proveedor','=','person.codigo')
             ->join('precio as p', 'art.idarticulo','=','p.idarticulo')
             ->where('art.barcode','=', $request->barcode)
+            ->orwhere('art.codigo','=', $request->barcode)
             ->orderBy('p.idprecio','desc')
             ->first();
         if(count($p)>0){

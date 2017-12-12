@@ -97,4 +97,6 @@ Route::get('/almacen/createPorCodigo', 'ArticuloController@getPorCodigo');
 
 Route::post('/precios/porfamilia', 'PrecioController@storeFamilia');
 
+Route::post('/almacen/createPorCodigo', 'ArticuloController@storePorCodigo');
+
 Auth::routes();

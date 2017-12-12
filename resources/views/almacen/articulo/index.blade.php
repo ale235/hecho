@@ -9,7 +9,7 @@
             </a>
             <a  href="{{URL::action('ArticuloController@getPorCodigo')}}" class="btn btn-app pull-right">
                 <span class="badge bg-green"></span>
-                <i class="fa fa-barcode"></i> Ingresar Producto222
+                <i class="fa fa-barcode"></i> Ingresar Producto por Codigo
             </a>
             <a class="btn btn-app pull-right">
                 <span class="badge bg-green"></span>
@@ -36,6 +36,7 @@
                         @if (Auth::user()->role == 1)
                             <th>Stock</th>
                         @endif
+                        <th>Codigo</th>
                         <th>Precio</th>
                         <th>Categoría</th>
                         <th>Estado</th>
@@ -48,6 +49,7 @@
                                 @if (Auth::user()->role == 1)
                                     <th>{{$art->stock}}</th>
                                 @endif
+                                <td>{{$art->codigo}}</td>
                                 <td>{{$art->ultimoprecio}}</td>
                                 <td>{{$art->categoria}}</td>
                                 <td>{{$art->estado}}</td>

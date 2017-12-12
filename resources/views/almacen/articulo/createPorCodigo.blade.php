@@ -14,10 +14,30 @@
                 </u>
             </div>
         @endif
-        {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
+        {!! Form::open(array('url'=>'almacen/createPorCodigo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
         {{Form::token()}}
         <div class="box box-body">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">Categoría</span>
+                    <select name="idcategoria" id="idcategoria" class="form-control">
+                        <option selected>Seleccione la Categoría</option>
+                        @foreach($categorias as $cat)
+                            @if($cat->nombre != 'Kiosco')
+                            <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <br>
+
             <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control" placeholder="Código del producto...">
+            </div>
+
+            <div class="input-group" style="display: none">
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
                 <input  type="text" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
             </div>
@@ -26,21 +46,6 @@
             <div class="input-group">
                 <span class="input-group-addon">Nombre</span>
                 <input type="text" name="nombre" id="nombre" value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
-            </div>
-            <br>
-
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-addon">Categoría</span>
-                    <select name="idcategoria" id="idcategoria" class="form-control">
-                        @foreach($categorias as $cat)
-                            <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
-                        @endforeach
-                    </select>
-                    <span class="input-group-btn">
-                        <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
-                    </span>
-                </div>
             </div>
             <br>
 
@@ -55,19 +60,9 @@
                     </select>
                     <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
                     <input type="hidden" name="idproveedor" id="idproveedor" value="{{old('idproveedor')}}">
-                    <span class="input-group-btn">
-                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
-                    </span>
                 </div>
             </div>
             <br>
-
-            <div style="display: none" class="col-lg-6 col-sm-6 col-md-6 col-xs-12">
-                <div class="from-group">
-                    <label for="stock">Codigo</label>
-                    <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control" placeholder="Código...">
-                </div>
-            </div>
 
             <hr size="60" />
 
@@ -118,6 +113,11 @@
             event.preventDefault();
         }
     });
+    $("#codigo").keypress(function(event){
+        if (event.which == '10' || event.which == '13') {
+            event.preventDefault();
+        }
+    });
     $(document).ready(function () {
         $('#idproveedores option[value="'+$('#idproveedor').val()+'"]').attr('selected', 'selected');
 
@@ -139,53 +139,20 @@
 
                 }
             });
-            $.ajax({
-                type:'get',
-                url:'{!!URL::to('buscarUltimoId')!!}',
-                data:{'codigo':cat_id},
-                success:function(data){
-                    if (data.codigo == null) {
-                        var d = ajustar(5, 1);
-                        $('#codigo').val(d);
-                    }
-                    else {
-                        var a = data.codigo.substr(data.codigo.length - 5);
-                        var b = parseInt(a) + 1;
-                        var c = ajustar(5, b);
-                        $('#codigo').val(c);
-                    }
-
-                },
-                error:function(){
-
-                }
-            });
 
         });
 
         $(document).on('change','#codigo',function(){
-            var cod = $('#idproveedores').val()+$('#codigo').val();
-            for(var i = 0; i<art.length;i++){
-                if(art[i].codigo == cod){
-                    alert('El código ya existe');
-                    $('#codigo').val(' ');
-                }
-            }
-
-        });
-
-        $(document).on('change','#barcode',function(){
             var cat_id=$(this).val();
             $.ajax({
                 type:'get',
                 url:'{!!URL::to('existeArticulo')!!}',
                 data:{'barcode':cat_id},
                 success:function(data){
-                    $('#barcode').attr('readonly', true);
+                    $('#barcode').val(data.idarticulo);
                     $('#nombre').val(data.nombre);
                     $('#nombre').attr('readonly', true);
                     $("#idcategoria").val(data.idcategoria);
-                    $("#codigo").val(data.codigo);
                     $("#idproveedores").val(data.proveedor);
                     $("#idproveedores").attr('disabled', 'disabled');
                     $("#existencia").text(data.stock);
@@ -205,31 +172,6 @@
 
         });
     });
-
-    function agregarprov() {
-    var proveedorselected = $('#idproveedores option:selected').text();
-    if(ultimoid.length == 0){
-        var d= ajustar(5,1);
-        $('#codigo').val(d);
-    } else{
-        var a = ultimoid;
-        var b = parseInt(a) + 1;
-        var c =ajustar(5,b);
-        $('#codigo').val(c);
-    }
-/*    var obj = JSON.parse(casa);
-    for (i = 0; i < obj.length; i++) {
-       if(proveedorselected == obj[i].proveedor){
-          var a = obj[i].codigo.substr(obj[i].proveedor.length, obj[i].codigo.length);
-          var b = parseInt(a) + 1;
-          var c =ajustar(5,b);
-           $('#codigo').val(c);
-       }else{
-           var d= ajustar(5,1);
-           $('#codigo').val(d);
-       }
-    }*/
-}
 
     function ajustar(tam, num) {
         if (num.toString().length < tam) return ajustar(tam, "0" + num)
