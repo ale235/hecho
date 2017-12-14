@@ -488,8 +488,8 @@ class VentaController extends Controller
 
             $fila[0] = $a->nombre;
             $fila[1] = $a->precio_venta;
-            $fila[2] = $a->cantidad;
-            $fila[3] = $a->precio_total;
+            $fila[2] = number_format($a->cantidad,2);
+            $fila[3] = number_format($a->precio_total,2);
             $fila[4] = $a->fecha_hora;
             $fila[5] = $a->idcategoria;
             $subtotales[$a->idcategoria] = $subtotales[$a->idcategoria] + $fila[3];
@@ -664,12 +664,12 @@ class VentaController extends Controller
 
                 $sheet->row($row, [' ','Subtotales']);
                 $sheet->row($row+1, ['Kiosco',$subtotales[1]]);
-                $sheet->row($row+2, ['Panificacion',$subtotales[2]]);
+                $sheet->row($row+2, ['Panificacion',number_format($subtotales[2],2)]);
                 $sheet->row($row+3, ['Comida',$subtotales[3]]);
                 $sheet->row($row+4, ['Arqueo',$subtotales[4]]);
                 $sheet->row($row+5, ['Lacteos',$subtotales[5]]);
                 $sheet->row($row+6, ['Bebidas',$subtotales[6]]);
-                $sheet->row($row+8, ['Total',$columna[$i][3]]);
+                $sheet->row($row+8, ['Total',number_format($columna[$i][3],2)]);
 
 
 //                dd($subtotales);
