@@ -330,9 +330,9 @@ class VentaController extends Controller
             $aux = DB::table('articulo as a')
                 ->join('detalle_venta as dv', 'dv.idarticulo', '=', 'a.idarticulo')
                 ->join('venta as v', 'v.idventa', '=', 'dv.idventa')
-                ->select('a.nombre', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
+                ->select('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
                 ->where('v.fecha_hora', '<', $date)
-                ->groupBy('a.nombre', 'dv.precio_venta', 'v.fecha_hora')
+                ->groupBy('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora')
                 ->orderBy('v.fecha_hora', 'desc')
                 ->get();
 
@@ -342,9 +342,9 @@ class VentaController extends Controller
             $aux = DB::table('articulo as a')
                 ->join('detalle_venta as dv', 'dv.idarticulo', '=', 'a.idarticulo')
                 ->join('venta as v', 'v.idventa', '=', 'dv.idventa')
-                ->select('a.nombre', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
+                ->select('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
                 ->whereBetween('v.fecha_hora', array(new Carbon($pieces[0]), new Carbon($pieces[1])))
-                ->groupBy('a.nombre', 'dv.precio_venta', 'v.fecha_hora')
+                ->groupBy('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora')
                 ->orderBy('v.fecha_hora', 'desc')
                 ->get();
         }
@@ -352,12 +352,14 @@ class VentaController extends Controller
         $columna = [];
         $cont2 = 1;
         $total = 0;
+        $subtotales = [0,0,0,0,0,0,0];
         $fila0 = [];
         $fila0[0] = 'Nombre';
         $fila0[1] = 'Precio Venta';
         $fila0[2] = 'Cantidad';
         $fila0[3] = 'Precio total';
         $fila0[4] = 'Fecha';
+        $fila0[5] = 'Categoria';
         $columna[0] = $fila0;
 
         foreach ($aux as $a) {
@@ -365,9 +367,11 @@ class VentaController extends Controller
 
             $fila[0] = $a->nombre;
             $fila[1] = $a->precio_venta;
-            $fila[2] = $a->cantidad;
-            $fila[3] = $a->precio_total;
+            $fila[2] = number_format($a->cantidad,2);
+            $fila[3] = number_format($a->precio_total,2);
             $fila[4] = $a->fecha_hora;
+            $fila[5] = $a->idcategoria;
+            $subtotales[$a->idcategoria] = $subtotales[$a->idcategoria] + $fila[3];
             $total = $total + $fila[3];
             $columna[$cont2] = $fila;
             $cont2 = $cont2 + 1;
@@ -378,15 +382,176 @@ class VentaController extends Controller
         $filanueva[2] = ' ';
         $filanueva[3] = $total;
         $filanueva[4] = ' ';
+        $filanueva[5] = ' ';
         $columna[$cont2] = $filanueva;
 
-        Excel::create('Laravel Excel', function ($excel) use ($columna) {
+        Excel::create('Laravel Excel', function ($excel) use ($columna, $subtotales) {
 
-            $excel->sheet('Excel sheet', function ($sheet) use ($columna) {
+            $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales) {
+                $sheet->setAutoSize(true);
+                //$sheet->setBorder('A1:F10', 'thin');
+                $sheet->setOrientation('landscape');
+                $mytime = Carbon::now('America/Argentina/Buenos_Aires');
+                if($mytime->hour < 16) {
+                    $turno = "Mañana";
+                }else {
+                    $turno = "Tarde";
+                }
+                $sheet->mergeCells('A1:F1');
+                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("d/m/Y");
+                $row = 2;
+                $sheet->row($row, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
+                $sheet->mergeCells('A3:F3');
 
-                $sheet->row(1, ['Nombre', 'Precio venta', 'Cantidad', 'Precio total']);
-                $sheet->fromArray($columna, null, 'A1', false, false);
+                $sheet->mergeCells('A4:F4');
 
+                //<editor-fold desc="Kiosco">
+                $row = 4;
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Kiosco');
+                    $cell->setAlignment('center');
+                    //$cell->setF('Kiosco');
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(16);
+
+                });
+                //$sheet->row($row, ['Kiosco']);
+                $row = 5;
+                $sheet->row($row, $columna[0]);
+                $i = 1;
+                while($columna[$i][5] == 1) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+
+                }
+                //</editor-fold>
+
+                //<editor-fold desc="Panificacion">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Panificacion');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 2) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+
+                }
+                //</editor-fold>
+
+                //<editor-fold desc="Comida">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Comida');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 3) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+
+                }
+                //</editor-fold>
+
+                //<editor-fold desc="Arqueo">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Arqueo');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 4) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+                    // dd($columna[$i][5]);
+                }
+                //</editor-fold>
+
+                //<editor-fold desc="Lacteos">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Lacteos');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+
+                while($columna[$i][5] == 5) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+                }
+                //</editor-fold>
+
+                //<editor-fold desc="Bebidas">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Bebidas');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 6) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+                }
+                //</editor-fold>
+
+                $sheet->setBorder('A1:F'.$row, 'thin');
+                $row = $row + 3;
+
+                $sheet->row($row, [' ','Subtotales']);
+                $sheet->row($row+1, ['Kiosco',$subtotales[1]]);
+                $sheet->row($row+2, ['Panificacion',number_format($subtotales[2],2)]);
+                $sheet->row($row+3, ['Comida',$subtotales[3]]);
+                $sheet->row($row+4, ['Arqueo',$subtotales[4]]);
+                $sheet->row($row+5, ['Lacteos',$subtotales[5]]);
+                $sheet->row($row+6, ['Bebidas',$subtotales[6]]);
+                $sheet->row($row+8, ['Total',number_format($columna[$i][3],2)]);
+
+
+//                dd($subtotales);
             });
 
         })->download('xls');
