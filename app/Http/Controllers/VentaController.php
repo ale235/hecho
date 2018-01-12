@@ -354,7 +354,7 @@ class VentaController extends Controller
         $columna = [];
         $cont2 = 1;
         $total = 0;
-        $subtotales = [0,0,0,0,0,0,0];
+        $subtotales = [0,0,0,0,0,0,0,0];
 
         foreach ($aux as $a) {
             $fila = [];
@@ -553,6 +553,28 @@ class VentaController extends Controller
                 }
                 //</editor-fold>
 
+                //<editor-fold desc="Cigarrillos">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Cigarrillos');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 7) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+                }
+                //</editor-fold>
+
+
                 $sheet->setBorder('A1:F'.$row, 'thin');
                 $row = $row + 3;
 
@@ -563,7 +585,8 @@ class VentaController extends Controller
                 $sheet->row($row+4, ['Arqueo',$subtotales[4]]);
                 $sheet->row($row+5, ['Lacteos',$subtotales[5]]);
                 $sheet->row($row+6, ['Bebidas',$subtotales[6]]);
-                $sheet->row($row+8, ['Total',number_format($columna[$i][3],2)]);
+                $sheet->row($row+7, ['Cigarrillos',$subtotales[7]]);
+                $sheet->row($row+9, ['Total',number_format($columna[$i][3],2)]);
 
 
 //                dd($subtotales);
@@ -657,7 +680,7 @@ class VentaController extends Controller
         $columna = [];
         $cont2 = 1;
         $total = 0;
-        $subtotales = [0,0,0,0,0,0,0];
+        $subtotales = [0,0,0,0,0,0,0,0];
 
 
         foreach ($aux as $a) {
@@ -854,6 +877,27 @@ class VentaController extends Controller
                 }
                 //</editor-fold>
 
+                //<editor-fold desc="Cigarrillos">
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $row++;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Cigarrillos');
+                    $cell->setAlignment('center');
+
+                });
+                $row++;
+                $sheet->row($row, $columna[0]);
+                while($columna[$i][5] == 7) {
+                    $row++;
+                    $sheet->row($row, $columna[$i]);
+                    $i++;
+                }
+                //</editor-fold>
+
                 $sheet->setBorder('A1:F'.$row, 'thin');
                 $row = $row + 3;
 
@@ -864,7 +908,8 @@ class VentaController extends Controller
                 $sheet->row($row+4, ['Arqueo',$subtotales[4]]);
                 $sheet->row($row+5, ['Lacteos',$subtotales[5]]);
                 $sheet->row($row+6, ['Bebidas',$subtotales[6]]);
-                $sheet->row($row+8, ['Total',number_format($columna[$i][3],2)]);
+                $sheet->row($row+7, ['Cigarrillos',$subtotales[7]]);
+                $sheet->row($row+9, ['Total',number_format($columna[$i][3],2)]);
 
 
 //                dd($subtotales);
