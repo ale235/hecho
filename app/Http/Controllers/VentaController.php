@@ -339,11 +339,13 @@ class VentaController extends Controller
 
         } else {
             $pieces = explode(" - ", $date);
+            $pieces[0]=$pieces[0] . ' 00:00:00';
+            $pieces[1]=$pieces[1] . ' 23:59:00';
             $aux = DB::table('articulo as a')
                 ->join('detalle_venta as dv', 'dv.idarticulo', '=', 'a.idarticulo')
                 ->join('venta as v', 'v.idventa', '=', 'dv.idventa')
                 ->select('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora', DB::raw('SUM(dv.cantidad) AS cantidad'), DB::raw('SUM(dv.precio_venta*dv.cantidad) AS precio_total'))
-                ->whereBetween('v.fecha_hora', array(new Carbon($pieces[0]), new Carbon($pieces[1])))
+                ->whereBetween('v.fecha_hora', [$pieces[0],$pieces[1]])
                 ->groupBy('a.nombre','a.idcategoria', 'dv.precio_venta', 'v.fecha_hora')
                 ->orderBy('v.fecha_hora', 'desc')
                 ->get();
@@ -353,14 +355,6 @@ class VentaController extends Controller
         $cont2 = 1;
         $total = 0;
         $subtotales = [0,0,0,0,0,0,0];
-        $fila0 = [];
-        $fila0[0] = 'Nombre';
-        $fila0[1] = 'Precio Venta';
-        $fila0[2] = 'Cantidad';
-        $fila0[3] = 'Precio total';
-        $fila0[4] = 'Fecha';
-        $fila0[5] = 'Categoria';
-        $columna[0] = $fila0;
 
         foreach ($aux as $a) {
             $fila = [];
@@ -376,6 +370,14 @@ class VentaController extends Controller
             $columna[$cont2] = $fila;
             $cont2 = $cont2 + 1;
         }
+        $fila0 = [];
+        $fila0[0] = 'Nombre';
+        $fila0[1] = 'Precio Venta';
+        $fila0[2] = 'Cantidad';
+        $fila0[3] = 'Precio total';
+        $fila0[4] = 'Fecha';
+        $fila0[5] = 'Categoria';
+
         $filanueva = [];
         $filanueva[0] = ' ';
         $filanueva[1] = ' ';
@@ -383,7 +385,20 @@ class VentaController extends Controller
         $filanueva[3] = $total;
         $filanueva[4] = ' ';
         $filanueva[5] = ' ';
-        $columna[$cont2] = $filanueva;
+        //$columna[$cont2] = $filanueva;
+
+
+//        dd($columna);
+
+        usort($columna, function ($item1, $item2) {
+            if ($item1[5] == $item2[5]) return 0;
+            return $item1[5] < $item2[5] ? -1 : 1;
+        });
+
+        array_unshift($columna,$fila0);
+        array_push($columna,$filanueva);
+        //dd($columna);
+
 
         Excel::create('Laravel Excel', function ($excel) use ($columna, $subtotales) {
 
@@ -568,10 +583,12 @@ class VentaController extends Controller
                 ->get();
         } else {
             $pieces = explode(" - ", $date);
+            $pieces[0]=$pieces[0] . ' 00:00:00';
+            $pieces[1]=$pieces[1] . ' 23:59:00';
             $aux = DB::table('venta as v')
                 ->join('persona as p', 'p.idpersona', '=', 'v.idcliente')
                 ->select('v.fecha_hora', 'p.nombre', 'v.total_venta')
-                ->whereBetween('v.fecha_hora', array(new Carbon($pieces[0]), new Carbon($pieces[1])))
+                ->whereBetween('v.fecha_hora', array($pieces[0],$pieces[1]))
                 ->get();
         }
 
@@ -599,6 +616,8 @@ class VentaController extends Controller
         $filanueva[1] = ' ';
         $filanueva[2] = $total;
         $columna[$cont2] = $filanueva;
+
+        //dd($columna);
 
         Excel::create('Laravel Excel', function ($excel) use ($columna) {
 
@@ -639,14 +658,7 @@ class VentaController extends Controller
         $cont2 = 1;
         $total = 0;
         $subtotales = [0,0,0,0,0,0,0];
-        $fila0 = [];
-        $fila0[0] = 'Nombre';
-        $fila0[1] = 'Precio Venta';
-        $fila0[2] = 'Cantidad';
-        $fila0[3] = 'Precio total';
-        $fila0[4] = 'Fecha';
-        $fila0[5] = 'Categoria';
-        $columna[0] = $fila0;
+
 
         foreach ($aux as $a) {
             $fila = [];
@@ -669,7 +681,25 @@ class VentaController extends Controller
         $filanueva[3] = $total;
         $filanueva[4] = ' ';
         $filanueva[5] = ' ';
-        $columna[$cont2] = $filanueva;
+        //$columna[$cont2] = $filanueva;
+
+
+        $fila0 = [];
+        $fila0[0] = 'Nombre';
+        $fila0[1] = 'Precio Venta';
+        $fila0[2] = 'Cantidad';
+        $fila0[3] = 'Precio total';
+        $fila0[4] = 'Fecha';
+        $fila0[5] = 'Categoria';
+
+        usort($columna, function ($item1, $item2) {
+            if ($item1[5] == $item2[5]) return 0;
+            return $item1[5] < $item2[5] ? -1 : 1;
+        });
+
+        array_unshift($columna,$fila0);
+        array_push($columna,$filanueva);
+        //dd($columna);
 
         Excel::create('Laravel Excel', function ($excel) use ($columna, $subtotales) {
 
