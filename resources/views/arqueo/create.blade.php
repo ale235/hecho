@@ -3,11 +3,11 @@
     <!-- Horizontal Form -->
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Nuevo Pago</h3>
+            <h3 class="box-title">Nuevo Arqueo</h3>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="form-horizontal" role="form" method="POST" action="{{ url('/pagos') }}" id="form-pago" >
+        <form class="form-horizontal" role="form" method="POST" action="{{ url('/arqueo') }}" id="form-arqueo" >
             {{ csrf_field() }}
             <div class="box-body">
                 <div class="form-group">

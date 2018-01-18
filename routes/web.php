@@ -27,6 +27,7 @@ Route::resource('ventas/venta','VentaController');
 Route::resource('seguridad/usuario','UsuarioController');
 Route::resource('compras/stockminimo','StockMinimoController');
 Route::resource('pagos','PagosController');
+Route::resource('arqueo','ArqueoController');
 
 Auth::routes();
 

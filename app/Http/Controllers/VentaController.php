@@ -399,8 +399,8 @@ class VentaController extends Controller
         array_push($columna,$filanueva);
         //dd($columna);
 
-
-        Excel::create('Laravel Excel', function ($excel) use ($columna, $subtotales) {
+        $pieces = explode(" - ", $date);
+        Excel::create('Resultado entre: '.$pieces[0].' a '.$pieces[1], function ($excel) use ($columna, $subtotales) {
 
             $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales) {
                 $sheet->setAutoSize(true);
@@ -666,6 +666,60 @@ class VentaController extends Controller
         $yesterday = $mytime2->toDateTimeString();
         $today = $mytime->toDateTimeString();
 
+        //<editor-fold desc="Pagos">
+
+
+        $pagos = DB::table('pagos')
+            ->whereBetween('fecha', array($yesterday, $today))
+            ->get();
+
+        $pagoscol = [];
+        $cont3 = 1;
+        $totalPago = 0;
+        foreach ($pagos as $p) {
+            $fila = [];
+
+            $fila[0] = $p->descripcion;
+            $fila[1] = $p->monto;
+            $pagoscol[$cont3] = $fila;
+            $cont3 = $cont3 + 1;
+            $totalPago = $totalPago + $fila[1];
+        }
+        $filapago0 = [];
+        $filapago0[0] = 'Descripcion';
+        $filapago0[1] = 'Monto';
+
+        array_unshift($pagoscol,$filapago0);
+
+        //</editor-fold>
+
+        //<editor-fold desc="Arqueo">
+
+
+        $arqueo = DB::table('arqueo')
+            ->whereBetween('fecha', array($yesterday, $today))
+            ->get();
+
+        $arqueocol = [];
+        $cont3 = 1;
+        $totalArqueo = 0;
+        foreach ($arqueo as $a) {
+            $fila = [];
+
+            $fila[0] = $a->descripcion;
+            $fila[1] = $a->monto;
+            $arqueocol[$cont3] = $fila;
+            $cont3 = $cont3 + 1;
+            $totalArqueo = $totalArqueo + $fila[1];
+        }
+        $filaarqueo0 = [];
+        $filaarqueo0[0] = 'Descripcion';
+        $filaarqueo0[1] = 'Monto';
+
+        array_unshift($arqueocol,$filaarqueo0);
+
+        //</editor-fold>
+
 
         $aux = DB::table('articulo as a')
             ->join('detalle_venta as dv', 'dv.idarticulo', '=', 'a.idarticulo')
@@ -724,9 +778,9 @@ class VentaController extends Controller
         array_push($columna,$filanueva);
         //dd($columna);
 
-        Excel::create('Laravel Excel', function ($excel) use ($columna, $subtotales) {
+        Excel::create('Caja ' . $mytime->format('Y-m-d'), function ($excel) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo) {
 
-            $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales) {
+            $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo) {
                 $sheet->setAutoSize(true);
                 //$sheet->setBorder('A1:F10', 'thin');
                 $sheet->setOrientation('landscape');
@@ -900,8 +954,13 @@ class VentaController extends Controller
 
                 $sheet->setBorder('A1:F'.$row, 'thin');
                 $row = $row + 3;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
 
-                $sheet->row($row, [' ','Subtotales']);
+                    $cell->setAlignment('center');
+
+                });
+                $sheet->row($row, ['Subtotales Ventas']);
                 $sheet->row($row+1, ['Kiosco',$subtotales[1]]);
                 $sheet->row($row+2, ['Panificacion',number_format($subtotales[2],2)]);
                 $sheet->row($row+3, ['Comida',$subtotales[3]]);
@@ -909,10 +968,51 @@ class VentaController extends Controller
                 $sheet->row($row+5, ['Lacteos',$subtotales[5]]);
                 $sheet->row($row+6, ['Bebidas',$subtotales[6]]);
                 $sheet->row($row+7, ['Cigarrillos',$subtotales[7]]);
+                $totalIngresos = number_format($columna[$i][3],2);
                 $sheet->row($row+9, ['Total',number_format($columna[$i][3],2)]);
 
+                $row = $row +11;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+                    $cell->setAlignment('center');
 
-//                dd($subtotales);
+                });
+                $sheet->row($row, ['Pagos']);
+                $row = $row +1;
+                $aux = 0;
+                for($i = 0; count($pagoscol)> $i; $i++){
+                    $sheet->row($row + $i, $pagoscol[$i]);
+                    $aux = $aux + 1;
+                }
+                $row = $row + $aux;
+                $sheet->row($row+1, ['Total Pagos',number_format($totalPago,2)]);
+
+                $row = $row +3;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+                    $cell->setAlignment('center');
+
+                });
+                $sheet->row($row, ['Arqueo']);
+                $row = $row +1;
+                $aux = 0;
+                for($i = 0; count($arqueocol)> $i; $i++){
+                    $sheet->row($row + $i, $arqueocol[$i]);
+                    $aux = $aux + 1;
+                }
+                $row = $row + $aux;
+                $sheet->row($row+1, ['Total Arqueo',number_format($totalArqueo,2)]);
+
+                $row = $row + 3;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+                    $cell->setAlignment('center');
+
+                });
+                $sheet->row($row, ['Caja del día']);
+                $intV = intval(str_replace(",","",$totalIngresos));
+                $sheet->row($row+2, ['Total: ',$intV+$totalArqueo-$totalPago]);
+
             });
 
         })->download('xls');

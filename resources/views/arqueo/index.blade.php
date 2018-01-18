@@ -2,10 +2,10 @@
 @section ('contenido')
     <div class="box box-primary">
         <div class="box-header with-border">
-            <h3 class="box-title">Pagos de Hoy</h3>
+            <h3 class="box-title">Arqueos de Hoy</h3>
             <a href="articulo/create" class="btn btn-app pull-right">
                 <span class="badge bg-green"></span>
-                <i class="fa fa-barcode"></i> Ver Pagos Anteriores
+                <i class="fa fa-barcode"></i> Ver Arqueos Anteriores
             </a>
             {{--<a  href="{{URL::action('ArticuloController@getPorCodigo')}}" class="btn btn-app pull-right">--}}
                 {{--<span class="badge bg-green"></span>--}}
@@ -27,7 +27,7 @@
         @endif
         <!-- /.box-header -->
         <div class="box-body">
-            <form class="form-horizontal" role="form" method="GET" action="{{ url('/pagos') }}" >
+            <form class="form-horizontal" role="form" method="GET" action="{{ url('/arqueo') }}" >
                 <div class="container">
                     <div class="form-group">
                         <label class="col-md-4 control-label">Fecha a Filtrar</label>
@@ -52,28 +52,28 @@
             </form>
             <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
             <ul class="todo-list">
-                @foreach($pagos as $pe)
+                @foreach($arqueos as $arqueo)
                     <li>
 
                         <!-- todo text -->
-                        <span class="text">{{$pe->descripcion}}</span>
+                        <span class="text">{{$arqueo->descripcion}}</span>
                         <!-- Emphasis label -->
-                        <small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$pe->monto}}</small>
+                        <small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$arqueo->monto}}</small>
                         <!-- General tools such as edit or delete-->
                         <div class="tools">
-                            <a href="{{URL::action('PagosController@edit',$pe->idpago)}}"><i class="fa fa-edit"></i></a>
-                            <a href="" data-target="#modal-delete-{{$pe->idpago}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                            <a href="{{URL::action('ArqueoController@edit',$arqueo->idarqueo)}}"><i class="fa fa-edit"></i></a>
+                            <a href="" data-target="#modal-delete-{{$arqueo->idarqueo}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </li>
-                    <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modal-delete-{{$pe->idpago}}">
-                        {{Form::open(array('action'=>array('PagosController@destroy', $pe->idpago), 'method'=>'delete'))}}
+                    <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modal-delete-{{$arqueo->idarqueo}}">
+                        {{Form::open(array('action'=>array('ArqueoController@destroy', $arqueo->idarqueo), 'method'=>'delete'))}}
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">x</span>
                                     </button>
-                                    <h4 class="modal-title">Cancelar Ingreso</h4>
+                                    <h4 class="modal-title">Cancelar Arqueo</h4>
                                 </div>
                                 <div class="modal-body">
                                     <p> ¿Está seguro que desea cancelar este ingreso?</p>
@@ -102,7 +102,7 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer clearfix no-border">
-            <a href="pagos/create"><button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Agregar Pago</button></a>
+            <a href="arqueo/create"><button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Agregar Arqueo</button></a>
         </div>
     </div>
 @endsection

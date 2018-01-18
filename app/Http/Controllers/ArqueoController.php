@@ -5,10 +5,10 @@ namespace ideas\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
-use ideas\Pagos;
+use ideas\Arqueo;
 use Illuminate\Support\Facades\Redirect;
 
-class PagosController extends Controller
+class ArqueoController extends Controller
 {
     public function __construct()
     {
@@ -20,17 +20,17 @@ class PagosController extends Controller
 
             if($request->get('daterange') == null){
                 $mytime = Carbon::now('America/Argentina/Buenos_Aires');
-                $pagos = DB::table('pagos')
+                $arqueo = DB::table('arqueo')
                     ->whereDay('fecha',$mytime->day)
                     ->whereMonth('fecha',$mytime->month)
                     ->whereYear('fecha',$mytime->year)
                     ->get();
-                $total = DB::table('pagos')
+                $total = DB::table('arqueo')
                     ->whereDay('fecha',$mytime->day)
                     ->whereMonth('fecha',$mytime->month)
                     ->whereYear('fecha',$mytime->year)
                     ->sum('monto');
-                return view('pagos.index', ['pagos' => $pagos, 'total' => $total]);
+                return view('arqueo.index', ['arqueos' => $arqueo, 'total' => $total]);
 
             }
             else{
@@ -42,22 +42,22 @@ class PagosController extends Controller
                 else {
                     $pieces = array($pieces[0].' 00:00:00', $pieces[0]. ' 23:59:00');
                 }
-                $pagos = DB::table('pagos')
+                $arqueo = DB::table('arqueo')
                     ->whereBetween('fecha', [$pieces[0],$pieces[1]])
                     ->get();
 
-                $total = DB::table('pagos')
+                $total = DB::table('arqueo')
                     ->whereBetween('fecha', [$pieces[0],$pieces[1]])
                     ->sum('monto');
 
-                return view('pagos.index', ['pagos' => $pagos, 'total' => $total]);
+                return view('arqueo.index', ['arqueos' => $arqueo, 'total' => $total]);
         }
     }
 
     public function create(Request $request)
     {
         if($request){
-            return view('pagos.create');
+            return view('arqueo.create');
         }
     }
 
@@ -66,37 +66,37 @@ class PagosController extends Controller
         if($request){
             $mytime = Carbon::now('America/Argentina/Buenos_Aires');
             //dd($request);
-            $pago = new Pagos;
-            $pago->fecha = $request->get('daterange');
-            $pago->descripcion = $request->get('descripcion');
-            $pago->monto = $request->get('monto');
-            $pago->save();
-//            $total = DB::table('pagos')->sum('monto');
-            return Redirect::to('pagos');
+            $arqueo = new Arqueo;
+            $arqueo->fecha = $request->get('daterange');
+            $arqueo->descripcion = $request->get('descripcion');
+            $arqueo->monto = $request->get('monto');
+            $arqueo->save();
+//            $total = DB::table('arqueo')->sum('monto');
+            return Redirect::to('arqueo');
         }
     }
 
     public function edit($id)
     {
-        $pago = Pagos::findOrFail($id);
-        return view('pagos.edit',['pago'=> $pago]);
+        $arqueo = Arqueo::findOrFail($id);
+        return view('arqueo.edit',['arqueo'=> $arqueo]);
     }
 
     public function update(Request $request, $id)
     {
         try {
             DB::beginTransaction();
-            $pago = Pagos::findOrFail($id);
-            $pago->fecha = $request->get('daterange');
-            $pago->descripcion = $request->get('descripcion');
-            $pago->monto = $request->get('monto');
-            $pago->update();
+            $arqueo = Arqueo::findOrFail($id);
+            $arqueo->fecha = $request->get('daterange');
+            $arqueo->descripcion = $request->get('descripcion');
+            $arqueo->monto = $request->get('monto');
+            $arqueo->update();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
         }
 
-        return Redirect::to('pagos');
+        return Redirect::to('arqueo');
     }
 
     public function show($id)
@@ -106,9 +106,9 @@ class PagosController extends Controller
 
     public function destroy($id)
     {
-        $pagos = Pagos::findOrFail($id);
-        $pagos->delete();
-        return Redirect::to('pagos');
+        $arqueo = Arqueo::findOrFail($id);
+        $arqueo->delete();
+        return Redirect::to('arqueo');
     }
 
 }

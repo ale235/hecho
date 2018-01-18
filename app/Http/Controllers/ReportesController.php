@@ -274,7 +274,7 @@ class ReportesController extends Controller
 
         $collection = DB::table('venta')
             ->select(DB::raw('SUM(total_venta_real) as total'))
-//            ->orderBy('desc')
+            ->whereYear('fecha_hora', '=', 2018)
             ->groupBy(DB::raw("month(fecha_hora)"))
             ->get();
         return $collection;

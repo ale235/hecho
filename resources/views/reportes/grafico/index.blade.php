@@ -262,7 +262,7 @@
                 label: {
                     text: "Here is a category scale"
                 },
-                labels: ["Julio", "Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+                labels: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Nomviembre','Diciembre']
             },
             series: [{
                 values: array2
