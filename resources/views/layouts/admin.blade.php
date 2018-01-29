@@ -124,6 +124,9 @@
                 <li class="treeview">
                     <a href="{{ url('arqueo') }}"><i class='fa fa-link'></i> <span>Arqueos</span> <i class="fa fa-angle-left pull-right"></i></a>
                 </li>
+                <li class="treeview">
+                    <a href="{{ url('balance') }}"><i class='fa fa-link'></i> <span>Balance</span> <i class="fa fa-angle-left pull-right"></i></a>
+                </li>
                 @if (Auth::user()->role == 1)
                 <li class="treeview">
                     <a href="#"><i class='fa fa-link'></i> <span>Precios</span> <i class="fa fa-angle-left pull-right"></i></a>
