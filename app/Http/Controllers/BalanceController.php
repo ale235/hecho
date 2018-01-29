@@ -133,6 +133,10 @@ class BalanceController extends Controller
         $yesterday = $mytime2->toDateTimeString();
         $today = $mytime->toDateTimeString();
 
+        $balance = DB::table('balance as b')
+            ->orderBy('b.fecha', 'desc')
+            ->first();
+
         //<editor-fold desc="Pagos">
 
 
@@ -187,13 +191,22 @@ class BalanceController extends Controller
 
         //</editor-fold>
 
-
+        //dd($balance);
         $aux = DB::table('venta as v')
-            ->select('v.fecha_hora', DB::raw('SUM(v.total_venta) AS total_venta'))
-            ->whereBetween('v.fecha_hora', [$yesterday,$today])
-            ->groupBy('v.fecha_hora')
-            ->orderBy('v.fecha_hora', 'desc')
-            ->get();
+            ->select('v.fecha_hora','v.total_venta')
+            ->whereBetween('v.fecha_hora', [$balance->fecha,$today])
+            ->get()
+            ->groupBy(function($date) {
+                return Carbon::parse($date->fecha_hora)->format('Y-m-d'); // grouping by years
+                //return Carbon::parse($date->created_at)->format('m'); // grouping by months
+            });
+
+//        $aux = DB::table('venta as v')
+//            ->select('v.fecha_hora', DB::raw('SUM(v.total_venta) AS total_venta'))
+//            ->whereBetween('v.fecha_hora', [$balance->fecha,$today])
+//            ->groupBy('v.fecha_hora')
+//            ->orderBy('v.fecha_hora', 'desc')
+//            ->get();
 
         dd($aux);
 
