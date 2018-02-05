@@ -35,6 +35,13 @@ class BalanceController extends Controller
                 $ventas = DB::table('venta')
                     ->where('fecha_hora','>=',$balance->fecha)
                     ->sum('total_venta');
+                $arqueoSuma = DB::table('arqueo')
+                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->sum('monto');
+                $pagosSuma = DB::table('pagos')
+                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->sum('monto');
+                $total = $ventas + $balance->capitalinicial + $arqueoSuma - $pagosSuma;
 //
 //                $total = DB::table('arqueo')
 //                    ->whereBetween('fecha', [$pieces[0],$pieces[1]])
@@ -44,7 +51,7 @@ class BalanceController extends Controller
 //
 //                dd($ventas);
 
-                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas]);
+                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total]);
 
             }
             else{

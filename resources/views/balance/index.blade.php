@@ -43,24 +43,15 @@
                 {{--@foreach($balances as $balance)--}}
                     <li>
                     <!-- todo text -->
-                    <span class="text">Fecha de Inicio del Balance: {{$balance->fecha}}</span>
-                    <!-- Emphasis label -->
-                    <div class="tools">
-                        <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
-                        <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
-                    </div>
-                </li>
-                    {{--<li>--}}
-                        {{--<!-- todo text -->--}}
-                        {{--<span class="text">Retiro de Capital</span>--}}
-                        {{--<!-- Emphasis label -->--}}
-                        {{--<small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->retirodecapital}}</small>--}}
-                        {{--<!-- General tools such as edit or delete-->--}}
-                        {{--<div class="tools">--}}
-                            {{--<a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>--}}
-                            {{--<a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>--}}
-                        {{--</div>--}}
-                    {{--</li>--}}
+                        <span class="text">Fecha de Inicio del Balance: {{$balance->fecha}}</span>
+                        <!-- Emphasis label -->
+                        <div class="tools">
+                            <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
+                            <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                        </div>
+                    </li>
+                    <hr>
+                    <h3>Ingresos</h3>
                     <li>
                         <!-- todo text -->
                         <span class="text">Capital Inicial</span>
@@ -88,6 +79,8 @@
                         <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$ventas}}</small>
                         <!-- General tools such as edit or delete-->
                     </li>
+                    <hr>
+                    <h3>Egresos</h3>
                     @foreach($pagos as $p)
                         <li>
                             <!-- todo text -->
@@ -127,7 +120,11 @@
                         <!-- todo text -->
                         <span class="text">Total</span>
                         <!-- Emphasis label -->
-                        {{--<small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$total}}</small>--}}
+                        @if($total >= 0)
+                            <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$total}}</small>
+                        @else
+                            <small class="label label-danger pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$total}}</small>
+                        @endif
                         <!-- General tools such as edit or delete-->
                     </li>
             </ul>
