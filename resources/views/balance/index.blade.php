@@ -27,21 +27,13 @@
             <form class="form-horizontal" role="form" method="GET" action="{{ url('/balance') }}" >
                 <div class="container">
                     <div class="form-group">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Fechas a Filtrar
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                                @foreach($fechasDeBalances as $fechasDeBalance)
-                                    <li><a href="#">{{$fechasDeBalance->fecha}}</a></li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        {{--<div class="col-md-4 inputGroupContainer">--}}
-                            {{--<div class="input-group">--}}
-                                {{--<span class="input-group-addon"><i class="fa fa-calendar"></i></span>--}}
-                                {{--<input type="text" class="form-control" id="daterange" name="daterange"/>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
+                        <select name="fbalance" id="fbalance" class="selectpicker" data-live-search="true">
+                            <option value="0" disabled="true" selected="true">Seleccione la Fecha
+                            </option>
+                            @foreach($fechasDeBalances as $fechasDeBalance)
+                                <option value="{{$fechasDeBalance->fecha}}">{{$fechasDeBalance->fecha}}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <div class="col-md-4 inputGroupContainer">
@@ -57,6 +49,17 @@
             <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
             <ul class="todo-list">
                 {{--@foreach($balances as $balance)--}}
+                    <li>
+                    <!-- todo text -->
+                    <span class="text"></span>
+                    <!-- Emphasis label -->
+                    <small class="label label-default pull-left" style="font-size: 15px">{{$balance->fecha}}</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                        <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
+                        <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                    </div>
+                </li>
                     <li>
                         <!-- todo text -->
                         <span class="text">Retiro de Capital</span>
@@ -123,33 +126,5 @@
 
 @push ('scripts')
  <script>
-     $(document).ready(function () {
-//        var start = moment();
-//        var end = moment();
-//        var d = new Date();
-//        d.setHours(0,0,0);
-         $('input[name="daterange"]').daterangepicker(
-             {
-                 locale: {
-//                    useCurrent: false,
-                     format: 'YYYY-MM-DD',
-//                    defaultDate: d
-                 },
-                 singleDatePicker: true,
-
-//                startDate: start,
-//                endDate: end,
-             }
-         );
-
-     });
-     var val = getURLParameter('daterange');
-     $('#daterange').val(val);
-
-     function getURLParameter(name) {
-         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
-     }
-
-
 </script>
 @endpush
