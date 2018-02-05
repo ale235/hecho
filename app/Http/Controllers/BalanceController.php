@@ -19,26 +19,32 @@ class BalanceController extends Controller
     public function index(Request $request)
     {
             if($request->get('fbalance') == null){
+                $mytime = Carbon::now('America/Argentina/Buenos_Aires');
+                $ahora = $mytime->toDateTimeString();
                 $balance = DB::table('balance')
                     ->orderBy('fecha','desc')
                     ->first();
                 $fechasDeBalances = DB::table('balance')
                     ->orderBy('fecha','desc')->get();
-//                $arqueo = DB::table('arqueo')
-//                    ->whereBetween('fecha', [$pieces[0],$pieces[1]])
-//                    ->get();
+                $arqueo = DB::table('arqueo')
+                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->get();
+                $pagos = DB::table('pagos')
+                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->get();
+                $ventas = DB::table('venta')
+                    ->where('fecha_hora','>=',$balance->fecha)
+                    ->sum('total_venta');
 //
 //                $total = DB::table('arqueo')
 //                    ->whereBetween('fecha', [$pieces[0],$pieces[1]])
 //                    ->sum('monto');
                 //dd($balance->fecha);
-//                $ventas = DB::table('venta')
-//                    ->where('fecha_hora','>=',$balance->fecha)
-//                    ->sum('total_venta');
+
 //
 //                dd($ventas);
 
-                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances]);
+                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas]);
 
             }
             else{
@@ -280,8 +286,10 @@ class BalanceController extends Controller
                 $sheet->setSize('E' . $row, 25, 18);
                 $sheet->row($row,[' ','','','','Total Egresos',$totalPago]);
                 //</editor-fold>
-                $row = 12;
+
                 $sheet->setBorder('A1:F'.$row, 'thin');
+
+                $row = 13;
 
                 $sheet->row($row, [' ','Subtotales']);
                 $sheet->row($row+1, ['Capital Inicial Anterior:',$balance->capitalinicial]);

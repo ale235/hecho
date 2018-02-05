@@ -3,14 +3,6 @@
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">Balance de Hoy</h3>
-            {{--<a href="articulo/create" class="btn btn-app pull-right">--}}
-                {{--<span class="badge bg-green"></span>--}}
-                {{--<i class="fa fa-barcode"></i> Ver Balances Anteriores--}}
-            {{--</a>--}}
-            {{--<a  href="{{URL::action('ArticuloController@getPorCodigo')}}" class="btn btn-app pull-right">--}}
-                {{--<span class="badge bg-green"></span>--}}
-                {{--<i class="fa fa-barcode"></i> Ingresar Producto por Codigo--}}
-            {{--</a>--}}
             <a href="{{URL::action('BalanceController@balanceHastaElDiaDeHoy')}}"><button class="btn btn-success pull-right">Balance hasta Hoy<i class="fa fa-file-excel-o"></i></button></a>
         </div>
         @if(count($errors)>0)
@@ -51,37 +43,60 @@
                 {{--@foreach($balances as $balance)--}}
                     <li>
                     <!-- todo text -->
-                    <span class="text"></span>
+                    <span class="text">Fecha de Inicio del Balance: {{$balance->fecha}}</span>
                     <!-- Emphasis label -->
-                    <small class="label label-default pull-left" style="font-size: 15px">{{$balance->fecha}}</small>
-                    <!-- General tools such as edit or delete-->
                     <div class="tools">
                         <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
                         <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
                     </div>
                 </li>
-                    <li>
-                        <!-- todo text -->
-                        <span class="text">Retiro de Capital</span>
-                        <!-- Emphasis label -->
-                        <small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->retirodecapital}}</small>
-                        <!-- General tools such as edit or delete-->
-                        <div class="tools">
-                            <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
-                            <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
-                        </div>
-                    </li>
+                    {{--<li>--}}
+                        {{--<!-- todo text -->--}}
+                        {{--<span class="text">Retiro de Capital</span>--}}
+                        {{--<!-- Emphasis label -->--}}
+                        {{--<small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->retirodecapital}}</small>--}}
+                        {{--<!-- General tools such as edit or delete-->--}}
+                        {{--<div class="tools">--}}
+                            {{--<a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>--}}
+                            {{--<a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>--}}
+                        {{--</div>--}}
+                    {{--</li>--}}
                     <li>
                         <!-- todo text -->
                         <span class="text">Capital Inicial</span>
                         <!-- Emphasis label -->
-                        <small class="label label-default pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->capitalinicial}}</small>
+                        <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->capitalinicial}}</small>
                         <!-- General tools such as edit or delete-->
                         <div class="tools">
                             <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
                             <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </li>
+                    @foreach($arqueo as $a)
+                    <li>
+                        <!-- todo text -->
+                        <span class="text">{{$a->descripcion}}</span>
+                        <!-- Emphasis label -->
+                        <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$a->monto}}</small>
+                        <!-- General tools such as edit or delete-->
+                    </li>
+                    @endforeach
+                    <li>
+                        <!-- todo text -->
+                        <span class="text">Ventas</span>
+                        <!-- Emphasis label -->
+                        <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$ventas}}</small>
+                        <!-- General tools such as edit or delete-->
+                    </li>
+                    @foreach($pagos as $p)
+                        <li>
+                            <!-- todo text -->
+                            <span class="text">{{$p->descripcion}}</span>
+                            <!-- Emphasis label -->
+                            <small class="label label-danger pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$p->monto}}</small>
+                            <!-- General tools such as edit or delete-->
+                        </li>
+                    @endforeach
                     <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modal-delete-{{$balance->idbalance}}">
                         {{Form::open(array('action'=>array('BalanceController@destroy', $balance->idbalance), 'method'=>'delete'))}}
                         <div class="modal-dialog">
