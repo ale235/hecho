@@ -103,5 +103,7 @@ Route::post('/precios/porfamilia', 'PrecioController@storeFamilia');
 Route::post('/almacen/createPorCodigo', 'ArticuloController@storePorCodigo');
 
 Route::get('/balanceHastaElDiaDeHoy','BalanceController@balanceHastaElDiaDeHoy');
+Route::get('/balanceDesdeHastaDetalle/{fbalance}','BalanceController@balanceDesdeHastaDetalle');
+
 
 Auth::routes();

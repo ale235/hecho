@@ -3,7 +3,8 @@
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">Balance de Hoy</h3>
-            <a href="{{URL::action('BalanceController@balanceHastaElDiaDeHoy')}}"><button class="btn btn-success pull-right">Balance hasta Hoy<i class="fa fa-file-excel-o"></i></button></a>
+            <a href="{{URL::action('BalanceController@balanceHastaElDiaDeHoy')}}"><button class="btn btn-success pull-right">Balance Reducido hasta Hoy<i class="fa fa-file-excel-o"></i></button></a>
+            <a href="{{URL::action('BalanceController@balanceDesdeHastaDetalle',$date)}}"><button class="btn btn-success pull-right">Exportar Resultado con Detalle<i class="fa fa-file-excel-o"></i></button></a>
         </div>
         @if(count($errors)>0)
             <div class="alert alert-danger">
@@ -17,14 +18,15 @@
         <!-- /.box-header -->
         <div class="box-body">
             <form class="form-horizontal" role="form" method="GET" action="{{ url('/balance') }}" >
-                <div class="container">
+                <div>
                     <div class="form-group">
-                        <select name="fbalance" id="fbalance" class="selectpicker" data-live-search="true">
-                            <option value="0" disabled="true" selected="true">Seleccione la Fecha
-                            </option>
+                        <select name="fbalance[]" id="fbalance[]" class="selectpicker form-control" width="auto" data-live-search="true" data-max-options="3" multiple>
+                            {{--<optgroup class="group1" label="GROUP1" data-max-options="2">--}}
+                            <option value="0" disabled="true" selected="true">Seleccione la Fecha</option>
                             @foreach($fechasDeBalances as $fechasDeBalance)
                                 <option value="{{$fechasDeBalance->fecha}}">{{$fechasDeBalance->fecha}}</option>
                             @endforeach
+                            {{--</optgroup>--}}
                         </select>
                     </div>
                     <div class="form-group">
@@ -90,6 +92,15 @@
                             <!-- General tools such as edit or delete-->
                         </li>
                     @endforeach
+                    @foreach($retirosBalance as $r)
+                        <li>
+                            <!-- todo text -->
+                            <span class="text">Retiro de Capital</span>
+                            <!-- Emphasis label -->
+                            <small class="label label-danger pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$r->retirodecapital}}</small>
+                            <!-- General tools such as edit or delete-->
+                        </li>
+                    @endforeach
                     <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modal-delete-{{$balance->idbalance}}">
                         {{Form::open(array('action'=>array('BalanceController@destroy', $balance->idbalance), 'method'=>'delete'))}}
                         <div class="modal-dialog">
@@ -138,5 +149,11 @@
 
 @push ('scripts')
  <script>
+     var val = getURLParameter('fbalance');
+     $('#fbalance').val(val);
+
+     function getURLParameter(name) {
+         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+     }
 </script>
 @endpush
