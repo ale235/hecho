@@ -352,6 +352,9 @@ class BalanceController extends Controller
         $pieces[0]=$pieces[0] . ' 00:00:00';
         $pieces[1]=$pieces[1] . ' 23:59:00';
 
+
+
+        //<editor-fold desc="Ventas">
         $aux = DB::table('venta as v')
             ->join('detalle_venta as dv', 'dv.idventa', '=', 'v.idventa')
             ->join('articulo as a', 'a.idarticulo', '=', 'dv.idarticulo')
@@ -366,17 +369,6 @@ class BalanceController extends Controller
                 return $date->nombre;// grouping by years
                 //return Carbon::parse($date->created_at)->format('m'); // grouping by months
             });
-
-//        dd($aux);
-
-//        $aux = DB::table('venta as v')
-//            ->select('v.fecha_hora','v.total_venta')
-//            ->whereBetween('v.fecha_hora', [$pieces[0],$pieces[1]])
-//            ->get()
-//            ->groupBy(function($date) {
-//                return Carbon::parse($date->fecha_hora)->format('Y-m-d'); // grouping by years
-//                //return Carbon::parse($date->created_at)->format('m'); // grouping by months
-//            });
 
         $ventas = [];
         $count = 0;
@@ -395,7 +387,165 @@ class BalanceController extends Controller
             $totalVentas = $totalVentas + $venta[1];
             array_push($ventas,$venta);
         }
-        dd($totalVentas);
+        //</editor-fold>
+
+        //<editor-fold desc="Balance">
+        $balance = DB::table('balance as b')
+            ->whereBetween('fecha', [$pieces[0],$pieces[1]])
+            ->orderBy('fecha', 'desc')
+            ->get();
+        //</editor-fold>
+
+        //<editor-fold desc="Pagos">
+
+
+        $pagos = DB::table('pagos')
+            ->whereBetween('fecha', [$pieces[0],$pieces[1]])
+            ->get();
+
+        $pagoscol = [];
+        $cont3 = 1;
+        $totalPago = 0;
+        foreach ($pagos as $p) {
+            $fila = [];
+
+            $fila[0] = $p->descripcion;
+            $fila[1] = $p->monto;
+            $pagoscol[$cont3] = $fila;
+            $cont3 = $cont3 + 1;
+            $totalPago = $totalPago + $fila[1];
+        }
+        $filapago0 = [];
+        $filapago0[0] = 'Descripcion';
+        $filapago0[1] = 'Monto';
+
+        array_unshift($pagoscol,$filapago0);
+
+        //</editor-fold>
+
+        //<editor-fold desc="Arqueo">
+
+
+        $arqueo = DB::table('arqueo')
+            ->whereBetween('fecha', [$pieces[0],$pieces[1]])
+            ->get();
+
+        $arqueocol = [];
+        $cont3 = 1;
+        $totalArqueo = 0;
+        foreach ($arqueo as $a) {
+            $fila = [];
+
+            $fila[0] = $a->descripcion;
+            $fila[1] = $a->monto;
+            $arqueocol[$cont3] = $fila;
+            $cont3 = $cont3 + 1;
+            $totalArqueo = $totalArqueo + $fila[1];
+        }
+        $filaarqueo0 = [];
+        $filaarqueo0[0] = 'Descripcion';
+        $filaarqueo0[1] = 'Monto';
+
+        array_unshift($arqueocol,$filaarqueo0);
+
+        //</editor-fold>
+
+        Excel::create('Caja ', function ($excel) use ($balance,$pagoscol, $totalPago,$arqueocol,$totalArqueo, $ventas,$totalVentas) {
+
+            $excel->sheet('Excel sheet', function ($sheet) use ($balance,$pagoscol, $totalPago,$arqueocol,$totalArqueo,$ventas,$totalVentas) {
+
+//                $sheet->row(1, ['Fecha', 'Cliente', 'Total']);
+//                $sheet->fromArray($ventas, null, 'A1', false, false);
+                $row = 1;
+
+                $sheet->setAutoSize(true);
+                $sheet->mergeCells('A'.$row . ':F'.$row);
+                $sheet->setSize('A' . $row, 25, 18);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Ingresos');
+                    $cell->setAlignment('center');
+                    //$cell->setF('Kiosco');
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(16);
+
+                });
+
+
+                $row = 2;
+                $sheet->mergeCells('B'.$row . ':C'.$row);
+                $sheet->mergeCells('D'.$row . ':E'.$row);
+                $sheet->setSize('A' . $row, 23, 18);
+                $sheet->row($row,[' ','Mañana',' ','Tarde',' ','Total']);
+
+                //<editor-fold desc="Ventas">
+                $row = 3;
+                $sheet->mergeCells('B'.$row . ':C'.$row);
+                $sheet->mergeCells('D'.$row . ':E'.$row);
+                $sheet->row($row,['Ventas','','','','',$totalVentas]);
+                //</editor-fold>
+
+                //<editor-fold desc="Arqueo">
+                $row = 4;
+                $sheet->mergeCells('B'.$row . ':C'.$row);
+                $sheet->mergeCells('D'.$row . ':E'.$row);
+                $sheet->row($row,['Arqueos','','','','',$totalArqueo]);
+                //</editor-fold>
+                //<editor-fold desc="Subtotal">
+                $row = 5;
+                $sheet->mergeCells('A'.$row . ':D'.$row);
+
+                $sheet->setSize('E' . $row, 25, 18);
+                $sheet->row($row,[' ','','','','Total Ingresos',$totalArqueo+$totalVentas]);
+                //</editor-fold>
+
+                $row = 6;
+                $sheet->mergeCells('A'.$row . ':F'.$row);
+                $sheet->setSize('A' . $row, 25, 18);
+                $sheet->cell('A'.$row, function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('Egresos');
+                    $cell->setAlignment('center');
+                    //$cell->setF('Kiosco');
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(16);
+
+                });
+                $row = 7;
+                $sheet->mergeCells('B'.$row . ':C'.$row);
+                $sheet->mergeCells('D'.$row . ':E'.$row);
+                $sheet->setSize('A' . $row, 23, 18);
+                $sheet->row($row,[' ','Mañana',' ','Tarde',' ','Total']);
+                //<editor-fold desc="Pagos">
+                $row = 8;
+                $sheet->mergeCells('B'.$row . ':C'.$row);
+                $sheet->mergeCells('D'.$row . ':E'.$row);
+                $sheet->row($row,['Pagos','','','','',$totalPago]);
+                //</editor-fold>
+                //<editor-fold desc="Subtotal">
+                $row = 9;
+                $sheet->mergeCells('A'.$row . ':D'.$row);
+                $sheet->setSize('E' . $row, 25, 18);
+                $sheet->row($row,[' ','','','','Total Egresos',$totalPago]);
+                //</editor-fold>
+
+                $sheet->setBorder('A1:F'.$row, 'thin');
+
+                $row = 13;
+
+                $sheet->row($row, [' ','Subtotales']);
+                //$sheet->row($row+1, ['Capital Inicial Anterior:',$balance->capitalinicial]);
+                $sheet->row($row+2, ['Ingresos: ',$totalArqueo+$totalVentas]);
+                $sheet->row($row+3, ['Egresos: ',$totalPago]);
+                //$sheet->row($row+4, ['Balance Final hasta este día: ',$balance->capitalinicial + $totalArqueo+$totalVentas - $totalPago]);
+
+
+
+            });
+
+        })->download('xls');
 
     }
 
