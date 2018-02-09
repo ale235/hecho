@@ -431,7 +431,7 @@ class BalanceController extends Controller
             ->get();
 
         $arqueocol = [];
-        $cont3 = 1;
+        $cont3 = 0;
         $totalArqueo = 0;
         foreach ($arqueo as $a) {
             $fila = [];
@@ -442,11 +442,11 @@ class BalanceController extends Controller
             $cont3 = $cont3 + 1;
             $totalArqueo = $totalArqueo + $fila[1];
         }
-        $filaarqueo0 = [];
-        $filaarqueo0[0] = 'Descripcion';
-        $filaarqueo0[1] = 'Monto';
-
-        array_unshift($arqueocol,$filaarqueo0);
+//        $filaarqueo0 = [];
+//        $filaarqueo0[0] = 'Descripcion';
+//        $filaarqueo0[1] = 'Monto';
+//
+//        array_unshift($arqueocol,$filaarqueo0);
 
         //</editor-fold>
 
@@ -481,6 +481,7 @@ class BalanceController extends Controller
                 $sheet->setSize('A' . $row, 23, 18);
                 $sheet->row($row,[' ','Mañana',' ','Tarde',' ','Total']);
 
+                //<editor-fold desc="Balance">
                 $row = 3;
                 $sheet->mergeCells('B'.$row . ':C'.$row);
                 $sheet->mergeCells('D'.$row . ':E'.$row);
@@ -495,6 +496,7 @@ class BalanceController extends Controller
 
                 });
                 $sheet->row($row,['Capital Inicial','','','','',$balance[0]->capitalinicial]);
+                //</editor-fold>
 
                 //<editor-fold desc="Ventas">
 //                $row = 4;
@@ -516,7 +518,7 @@ class BalanceController extends Controller
 //                $sheet->row($row,['Ventas','','','','',$totalVentas]);
 
                 $i = 0;
-                $row = 4;
+                $row = 5;
                 while($i < count($ventas)) {
                     //$row++;
                     $sheet->row($row,[$ventas[$i][0],'','','','',$ventas[$i][1]]);
@@ -527,12 +529,18 @@ class BalanceController extends Controller
 
                 //</editor-fold>
 
-//                //<editor-fold desc="Arqueo">
-//                $row = 4;
-//                $sheet->mergeCells('B'.$row . ':C'.$row);
-//                $sheet->mergeCells('D'.$row . ':E'.$row);
+                //<editor-fold desc="Arqueo">
+                $row++;
+                $i = 0;
+                while($i < count($arqueocol)) {
+                    //$row++;
+                    $sheet->row($row,[$arqueocol[$i][0],'','','','',$arqueocol[$i][1]]);
+                    $i++;
+                    $row++;
+
+                }
 //                $sheet->row($row,['Arqueos','','','','',$totalArqueo]);
-//                //</editor-fold>
+                //</editor-fold>
 
 
                 //<editor-fold desc="Subtotal">
