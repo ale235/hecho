@@ -23,6 +23,7 @@
                         <select name="fbalance[]" id="fbalance[]" class="selectpicker form-control" width="auto" data-live-search="true" data-max-options="3" multiple>
                             {{--<optgroup class="group1" label="GROUP1" data-max-options="2">--}}
                             <option value="0" disabled="true" selected="true">Seleccione la Fecha</option>
+                            <option value="{{$ahora}}">Hoy</option>
                             @foreach($fechasDeBalances as $fechasDeBalance)
                                 <option value="{{$fechasDeBalance->fecha}}">{{$fechasDeBalance->fecha}}</option>
                             @endforeach
@@ -45,7 +46,13 @@
                 {{--@foreach($balances as $balance)--}}
                     <li>
                     <!-- todo text -->
-                        <span class="text">Fecha de Inicio del Balance: {{$balance->fecha}}</span>
+                        <span class="text">
+                            Fecha de Inicio del Balance: {{$balance->fecha}}, hasta
+                            @if($balanceFin != null)
+                                {{$balanceFin->fecha}}
+                            @else hoy
+                            @endif
+                        </span>
                         <!-- Emphasis label -->
                         <div class="tools">
                             <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
@@ -149,11 +156,28 @@
 
 @push ('scripts')
  <script>
-     var val = getURLParameter('fbalance');
-     $('#fbalance').val(val);
+//     var val = getURLParameter('fbalance');
+//     $('#fbalance').val(val);
+//
+//     function getURLParameter(name) {
+//         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+//     }
 
-     function getURLParameter(name) {
-         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
-     }
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+$('#fbalance').val(getUrlParameter('fbalance[]'));
+console.log(getUrlParameter('fbalance[]'));
 </script>
 @endpush
