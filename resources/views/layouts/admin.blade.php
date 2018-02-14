@@ -233,6 +233,8 @@
 <!-- AdminLTE App -->
 <script src={{asset('js/app.min.js')}}></script>
 
+<script src={{asset('js/bootstrap3-typeahead.js')}}></script>
+
 
 
 </body>

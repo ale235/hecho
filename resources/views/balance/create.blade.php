@@ -3,11 +3,11 @@
     <!-- Horizontal Form -->
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Nuevo Arqueo</h3>
+            <h3 class="box-title">Nuevo Balance</h3>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="form-horizontal" role="form" method="POST" action="{{ url('/arqueo') }}" id="form-arqueo" >
+        <form class="form-horizontal" role="form" method="POST" action="{{ url('/balance') }}" id="form-balance" >
             {{ csrf_field() }}
             <div class="box-body">
                 <div class="form-group">
@@ -18,17 +18,17 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="descripcion" class="col-sm-2 control-label">Descripcion</label>
+                    <label for="descripcion" class="col-sm-2 control-label">Retiro de Capital</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="descripcion" name="descripcion" placeholder="Descripcion">
+                        <input type="number" class="form-control" id="retirodecapital" name="retirodecapital" placeholder="Retiro de Capital">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="Monto" class="col-sm-2 control-label">Monto</label>
+                    <label for="Monto" class="col-sm-2 control-label">Capital Inicial</label>
 
                     <div class="col-sm-10">
-                        <input type="number" class="form-control" id="monto" name="monto" placeholder="Monto">
+                        <input type="number" class="form-control" id="capitalinicial" name="capitalinicial" placeholder="Capital Inicial">
                     </div>
                 </div>
             </div>

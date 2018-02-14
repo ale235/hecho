@@ -106,4 +106,7 @@ Route::get('/balanceHastaElDiaDeHoy','BalanceController@balanceHastaElDiaDeHoy')
 Route::get('/balanceDesdeHastaDetalle/{fbalance}','BalanceController@balanceDesdeHastaDetalle');
 
 
+Route::get('autocomplete',array('as'=>'autocomplete', 'uses'=>'PagosController@autocomplete'));
+
+
 Auth::routes();

@@ -68,7 +68,7 @@
                         <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$balance->capitalinicial}}</small>
                         <!-- General tools such as edit or delete-->
                         <div class="tools">
-                            <a href="{{URL::action('ArqueoController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
+                            <a href="{{URL::action('BalanceController@edit',$balance->idbalance)}}"><i class="fa fa-edit"></i></a>
                             <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </li>

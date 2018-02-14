@@ -102,7 +102,7 @@ class BalanceController extends Controller
     public function create(Request $request)
     {
         if($request){
-            return view('arqueo.create');
+            return view('balance.create');
         }
     }
 
@@ -111,13 +111,13 @@ class BalanceController extends Controller
         if($request){
             $mytime = Carbon::now('America/Argentina/Buenos_Aires');
             //dd($request);
-            $arqueo = new Arqueo;
-            $arqueo->fecha = $request->get('daterange');
-            $arqueo->descripcion = $request->get('descripcion');
-            $arqueo->monto = $request->get('monto');
-            $arqueo->save();
+            $balance = new Balance;
+            $balance->fecha = $request->get('daterange');
+            $balance->retirodecapital = $request->get('retirodecapital');
+            $balance->capitalinicial = $request->get('capitalinicial');
+            $balance->save();
 //            $total = DB::table('arqueo')->sum('monto');
-            return Redirect::to('arqueo');
+            return Redirect::to('balance');
         }
     }
 
@@ -525,7 +525,7 @@ class BalanceController extends Controller
 //                $sheet->row($row,['Ventas','','','','',$totalVentas]);
 
                     $i = 0;
-                    $row = 5;
+                    $row = 4;
                     while($i < count($ventas)) {
                         //$row++;
                         $sheet->row($row,[$ventas[$i][0],'','','','',$ventas[$i][1]]);
@@ -629,7 +629,7 @@ class BalanceController extends Controller
                     $sheet->row($row+1, ['Capital Inicial Anterior:',$balance[0]->capitalinicial]);
                     $sheet->row($row+2, ['Ingresos: ',$totalArqueo+$totalVentas]);
                     $sheet->row($row+3, ['Egresos: ',$totalPago+$sumretiro]);
-                    $sheet->row($row+5, ['Balance Final hasta este día: ',$balance[0]->capitalinicial + $totalArqueo+$totalVentas - $totalPago- $sumretiro]);
+                    $sheet->row($row+4, ['Balance Final hasta este día: ',$balance[0]->capitalinicial + $totalArqueo+$totalVentas - $totalPago- $sumretiro]);
 
 
 

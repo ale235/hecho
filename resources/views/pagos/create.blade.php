@@ -63,6 +63,50 @@
             }
         );
 
+        var path ="{{ route('autocomplete') }}";
+        $("#descripcion").typeahead({
+            minLength: 3,
+            autoSelect: true,
+            dataType: 'json',
+            source: function (query, process) {
+
+                return $.get(path, {query:query}, function (data) {
+                    var nombres = data.map(function (item) {
+                        return item.descripcion;
+                    });
+                    return process(nombres);
+                })
+            },
+            updater:function (item,data) {
+                console.log(item)
+                //item = selected item
+                var input = item.split(' ')
+
+                {{--$.ajax({--}}
+                {{--type:'get',--}}
+                {{--url:'{!!URL::to('buscarPrecioArticuloVentasPorCodigo')!!}',--}}
+                {{--data:{'codigo':input[0]},--}}
+                {{--success:function(data){--}}
+                {{--//console.log('success');--}}
+
+                {{--console.log(data);--}}
+
+                {{--$('#pprecio_venta').val(data[0].precio_venta);--}}
+                {{--$('#pidarticulo').val(data.codigo);--}}
+                {{--$('#pidarticuloidarticulo').val(data.idarticulo);--}}
+                {{--$('#pidarticulonombre').val(data.nombre);--}}
+
+                {{--$('#nombretemporal').text(data.nombre);--}}
+
+                {{--},--}}
+                {{--error:function(){--}}
+
+                {{--}--}}
+                {{--});--}}
+
+            }
+        });
+
     });
 
 </script>
