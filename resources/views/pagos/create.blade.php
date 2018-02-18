@@ -7,7 +7,7 @@
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="form-horizontal" role="form" method="POST" action="{{ url('/pagos') }}" id="form-pago" >
+        <form class="form-horizontal" role="form" method="POST" action="{{ url('/pagos') }}" id="form-pago" autocomplete="off">
             {{ csrf_field() }}
             <div class="box-body">
                 <div class="form-group">
@@ -78,9 +78,8 @@
                 })
             },
             updater:function (item,data) {
-                console.log(item)
-                //item = selected item
-                var input = item.split(' ')
+//                console.log(item);
+                return item;
 
                 {{--$.ajax({--}}
                 {{--type:'get',--}}

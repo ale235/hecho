@@ -111,4 +111,13 @@ class ArqueoController extends Controller
         return Redirect::to('arqueo');
     }
 
+    public function autocompleteArqueo(Request $request)
+    {
+        $data = Arqueo::select('descripcion')
+            ->where('descripcion','LIKE','%'.$request->get('query').'%')
+            ->distinct()
+            ->get();
+        return response()->json($data);
+    }
+
 }

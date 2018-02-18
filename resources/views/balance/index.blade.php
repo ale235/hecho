@@ -81,13 +81,15 @@
                         <!-- General tools such as edit or delete-->
                     </li>
                     @endforeach
+                    @if($ventas != 0)
                     <li>
                         <!-- todo text -->
-                        <span class="text">Ventas</span>
+                        <span class="text">Ventas Registradas</span>
                         <!-- Emphasis label -->
                         <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$ventas}}</small>
                         <!-- General tools such as edit or delete-->
                     </li>
+                    @endif
                     <hr>
                     <h3>Egresos</h3>
                     @foreach($pagos as $p)

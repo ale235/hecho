@@ -115,6 +115,7 @@ class PagosController extends Controller
     {
         $data = Pagos::select('descripcion')
             ->where('descripcion','LIKE','%'.$request->get('query').'%')
+            ->distinct()
             ->get();
         return response()->json($data);
     }

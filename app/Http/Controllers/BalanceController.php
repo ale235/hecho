@@ -131,7 +131,7 @@ class BalanceController extends Controller
     {
         try {
             DB::beginTransaction();
-            $arqueo = Arqueo::findOrFail($id);
+            $arqueo = Balance::findOrFail($id);
             $arqueo->fecha = $request->get('daterange');
             $arqueo->descripcion = $request->get('descripcion');
             $arqueo->monto = $request->get('monto');
@@ -151,9 +151,9 @@ class BalanceController extends Controller
 
     public function destroy($id)
     {
-        $arqueo = Arqueo::findOrFail($id);
+        $arqueo = Balance::findOrFail($id);
         $arqueo->delete();
-        return Redirect::to('arqueo');
+        return Redirect::to('balance');
     }
 
     public function balanceHastaElDiaDeHoy(Request $request)

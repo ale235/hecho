@@ -107,6 +107,7 @@ Route::get('/balanceDesdeHastaDetalle/{fbalance}','BalanceController@balanceDesd
 
 
 Route::get('autocomplete',array('as'=>'autocomplete', 'uses'=>'PagosController@autocomplete'));
+Route::get('autocompleteArqueo',array('as'=>'autocompleteArqueo', 'uses'=>'ArqueoController@autocompleteArqueo'));
 
 
 Auth::routes();
