@@ -47,8 +47,25 @@ class BalanceController extends Controller
                 $mytime = Carbon::now('America/Argentina/Buenos_Aires');
                 $date = $mytime->toDateTimeString();
                 $balanceFin = null;
-                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total, 'date' => $date , 'retirosBalance' => $retirosBalance, 'ahora' => $ahora, 'balanceFin' => $balanceFin]);
 
+
+
+                //<editor-fold desc="Saldo Anterior">
+                $yesterday = Carbon::yesterday('America/Argentina/Buenos_Aires')->format("Y-m-d");
+
+                $ventasanterior = DB::table('venta')
+                    ->whereBetween('fecha_hora',[$balance->fecha,$yesterday])
+                    ->sum('total_venta');
+                $arqueoSumaanterior = DB::table('arqueo')
+                    ->whereBetween('fecha', [$balance->fecha,$yesterday])
+                    ->sum('monto');
+                $pagosSumaanterior = DB::table('pagos')
+                    ->whereBetween('fecha', [$balance->fecha,$yesterday])
+                    ->sum('monto');
+                $saldoAnterior = $balance->capitalinicial + $ventasanterior + $arqueoSumaanterior - $pagosSumaanterior;
+                //</editor-fold>
+
+                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total, 'date' => $date , 'retirosBalance' => $retirosBalance, 'ahora' => $ahora, 'balanceFin' => $balanceFin, 'saldoAnterior' => $saldoAnterior]);
             }
             else{
                 $ahora = Carbon::now('America/Argentina/Buenos_Aires')->format("Y-m-d");
@@ -94,8 +111,9 @@ class BalanceController extends Controller
                     $totalRetiros = $totalRetiros + $r->retirodecapital;
                 }
                 $total = $ventas + $balance->capitalinicial + $arqueoSuma - $pagosSuma - $totalRetiros;
+                $saldoAnterior = null;
                 //dd($date);
-                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total, 'retirosBalance' => $retirosBalance, 'date' => $date, 'ahora' => $ahora, 'balanceFin' => $balanceFin]);
+                return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total, 'retirosBalance' => $retirosBalance, 'date' => $date, 'ahora' => $ahora, 'balanceFin' => $balanceFin , 'saldoAnterior' => $saldoAnterior]);
         }
     }
 

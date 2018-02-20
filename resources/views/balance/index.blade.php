@@ -60,6 +60,16 @@
                         </div>
                     </li>
                     <hr>
+                    @if($saldoAnterior != null)
+                    <h3>Saldo Anterior</h3>
+                    <li>
+                    <!-- todo text -->
+                    <span class="text">Total:</span>
+                    <!-- Emphasis label -->
+                    <small class="label label-success pull-right" style="font-size: 15px"><i class="fa fa-money"></i> {{$saldoAnterior}}</small>
+                    <!-- General tools such as edit or delete-->
+                    @endif
+                </li>
                     <h3>Ingresos</h3>
                     <li>
                         <!-- todo text -->
