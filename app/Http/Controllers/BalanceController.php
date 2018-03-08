@@ -20,30 +20,32 @@ class BalanceController extends Controller
     {
             if($request->get('fbalance') == null){
                 $ahora = Carbon::now('America/Argentina/Buenos_Aires')->format("Y-m-d");
+                $yesterday = Carbon::yesterday('America/Argentina/Buenos_Aires')->format("Y-m-d");
 //                $ahora = $mytime->toDateTimeString();
                 $balance = DB::table('balance')
                     ->orderBy('fecha','desc')
                     ->first();
+                if(count($balance) == 0){
+                    return view('balance.create');
+                }
                 $retirosBalance = [];
                 $fechasDeBalances = DB::table('balance')
                     ->orderBy('fecha','desc')->get();
                 $arqueo = DB::table('arqueo')
-                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->where('fecha', $ahora)
                     ->get();
                 $pagos = DB::table('pagos')
-                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->where('fecha', $ahora)
                     ->get();
                 $ventas = DB::table('venta')
-                    ->where('fecha_hora','>=',$balance->fecha)
+                    ->where('fecha_hora','>',$yesterday)
                     ->sum('total_venta');
                 $arqueoSuma = DB::table('arqueo')
-                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->where('fecha', [$ahora])
                     ->sum('monto');
                 $pagosSuma = DB::table('pagos')
-                    ->whereBetween('fecha', [$balance->fecha,$ahora])
+                    ->where('fecha', [$ahora])
                     ->sum('monto');
-                $total = $ventas + $balance->capitalinicial + $arqueoSuma - $pagosSuma;
-
                 $mytime = Carbon::now('America/Argentina/Buenos_Aires');
                 $date = $mytime->toDateTimeString();
                 $balanceFin = null;
@@ -51,7 +53,7 @@ class BalanceController extends Controller
 
 
                 //<editor-fold desc="Saldo Anterior">
-                $yesterday = Carbon::yesterday('America/Argentina/Buenos_Aires')->format("Y-m-d");
+                //$yesterday = Carbon::yesterday('America/Argentina/Buenos_Aires')->format("Y-m-d");
 
                 $ventasanterior = DB::table('venta')
                     ->whereBetween('fecha_hora',[$balance->fecha,$yesterday])
@@ -62,8 +64,15 @@ class BalanceController extends Controller
                 $pagosSumaanterior = DB::table('pagos')
                     ->whereBetween('fecha', [$balance->fecha,$yesterday])
                     ->sum('monto');
-                $saldoAnterior = $balance->capitalinicial + $ventasanterior + $arqueoSumaanterior - $pagosSumaanterior;
+//                dd($pagosSumaanterior);
+                $arqueoSumaanteriorbien = intval(str_replace(",",".",$arqueoSumaanterior));
+                $pagoSumaanteriorbien = intval(str_replace(",",".",$pagosSumaanterior));
+
+                $saldoAnterior = $balance->capitalinicial + $arqueoSumaanteriorbien + $ventasanterior  - $pagoSumaanteriorbien;
+//                dd($pagosSuma);
                 //</editor-fold>
+
+                $total = $ventas + $saldoAnterior + $arqueoSuma - $pagosSuma;
 
                 return view('balance.index', ['balance' => $balance, 'fechasDeBalances' => $fechasDeBalances, 'arqueo' => $arqueo, 'pagos' => $pagos, 'ventas' => $ventas, 'total' => $total, 'date' => $date , 'retirosBalance' => $retirosBalance, 'ahora' => $ahora, 'balanceFin' => $balanceFin, 'saldoAnterior' => $saldoAnterior]);
             }

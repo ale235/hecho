@@ -71,6 +71,7 @@
                     @endif
                 </li>
                     <h3>Ingresos</h3>
+                    @if($saldoAnterior == null)
                     <li>
                         <!-- todo text -->
                         <span class="text">Capital Inicial</span>
@@ -82,6 +83,7 @@
                             <a href="" data-target="#modal-delete-{{$balance->idbalance}}" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </li>
+                    @endif
                     @foreach($arqueo as $a)
                     <li>
                         <!-- todo text -->
