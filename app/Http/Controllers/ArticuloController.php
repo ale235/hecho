@@ -81,7 +81,7 @@ class ArticuloController extends Controller
         {
         DB::beginTransaction();
         $articulo = new Articulo;
-            if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
+            if(Articulo::where('barcode',$request->get('barcode'))->exists()){
                 $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
                 $articulo->idcategoria = $request->get('idcategoria');
                 //$articulo->codigo =$request->get('proveedor');
@@ -129,6 +129,7 @@ class ArticuloController extends Controller
                 $articulo->update();
             }
             else{
+                dd(1);
                 $ultimo =Articulo::orderBy('idarticulo','desc')->first();
                 $articulo->idcategoria = $request->get('idcategoria');
                 //dd($request);
@@ -208,6 +209,7 @@ class ArticuloController extends Controller
 //
 //            DB::beginTransaction();
             if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
+                dd(1);
                 $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
                 $articulo->idcategoria = $request->get('idcategoria');
                 $articulo->codigo =$request->get('codigo');
@@ -498,13 +500,7 @@ class ArticuloController extends Controller
             ->orwhere('art.codigo','=', $request->barcode)
             ->orderBy('p.idprecio','desc')
             ->first();
-        if(count($p)>0){
-
             return response()->json($p);
-        }
-       else{
-           return response()->json(['error' => 'Error msg'], 404);
-       }
     }
 
     public function getPorCodigo()
