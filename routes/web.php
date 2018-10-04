@@ -28,7 +28,6 @@ Route::resource('seguridad/usuario','UsuarioController');
 Route::resource('compras/stockminimo','StockMinimoController');
 Route::resource('pagos','PagosController');
 Route::resource('arqueo','ArqueoController');
-Route::resource('balance','BalanceController');
 
 Auth::routes();
 
@@ -101,13 +100,5 @@ Route::get('/almacen/createPorCodigo', 'ArticuloController@getPorCodigo');
 Route::post('/precios/porfamilia', 'PrecioController@storeFamilia');
 
 Route::post('/almacen/createPorCodigo', 'ArticuloController@storePorCodigo');
-
-Route::get('/balanceHastaElDiaDeHoy','BalanceController@balanceHastaElDiaDeHoy');
-Route::get('/balanceDesdeHastaDetalle/{fbalance}','BalanceController@balanceDesdeHastaDetalle');
-
-
-Route::get('autocomplete',array('as'=>'autocomplete', 'uses'=>'PagosController@autocomplete'));
-Route::get('autocompleteArqueo',array('as'=>'autocompleteArqueo', 'uses'=>'ArqueoController@autocompleteArqueo'));
-
 
 Auth::routes();

@@ -61,6 +61,12 @@
     }
 
     $(document).ready(function () {
+        $("#barcode").keypress(function (event) {
+            if (event.which == '10' || event.which == '13') {
+                event.preventDefault();
+            }
+        });
+
         $(document).on('change','#barcode',function(){
             var cat_id=$(this).val();
             $.ajax({

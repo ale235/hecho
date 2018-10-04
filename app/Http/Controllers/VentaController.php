@@ -15,6 +15,7 @@ use ideas\Precio;
 use ideas\Persona;
 use DB;
 use Illuminate\Support\Facades\Auth;
+use Mockery\Exception;
 use PHPExcel_Worksheet_Drawing;
 
 use Carbon\Carbon;
@@ -357,18 +358,25 @@ class VentaController extends Controller
         $subtotales = [0,0,0,0,0,0,0,0];
 
         foreach ($aux as $a) {
-            $fila = [];
+            try{
+                $fila = [];
 
-            $fila[0] = $a->nombre;
-            $fila[1] = $a->precio_venta;
-            $fila[2] = number_format($a->cantidad,2);
-            $fila[3] = number_format($a->precio_total,2);
-            $fila[4] = $a->fecha_hora;
-            $fila[5] = $a->idcategoria;
-            $subtotales[$a->idcategoria] = $subtotales[$a->idcategoria] + $fila[3];
-            $total = $total + $fila[3];
-            $columna[$cont2] = $fila;
-            $cont2 = $cont2 + 1;
+                $fila[0] = $a->nombre;
+                $fila[1] = $a->precio_venta;
+                $fila[2] = number_format($a->cantidad,2);
+                $fila[3] = number_format($a->precio_total,2);
+                $fila[4] = $a->fecha_hora;
+                $fila[5] = $a->idcategoria;
+                //dd($a);
+                $subtotales[$a->idcategoria] = $subtotales[$a->idcategoria] + $fila[3];
+                $total = $total + $fila[3];
+                $columna[$cont2] = $fila;
+                $cont2 = $cont2 + 1;
+            }
+            catch (\Exception $e) {
+                dd($a);
+            }
+
         }
         $fila0 = [];
         $fila0[0] = 'Nombre';
@@ -467,7 +475,7 @@ class VentaController extends Controller
                     $turno = "Tarde";
                 }
                 $sheet->mergeCells('A1:F1');
-                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("d/m/Y");
+                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("Y-m-d");
                 $row = 2;
                 $sheet->row($row, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
                 $sheet->mergeCells('A3:F3');
@@ -762,7 +770,7 @@ class VentaController extends Controller
         $yesterday = $mytime2->toDateTimeString();
         $today = $mytime->toDateTimeString();
 
-        //<editor-fold desc="Pagos">
+        //<editor-fold desc="Pagos del Día">
 
 
         $pagos = DB::table('pagos')
@@ -789,7 +797,7 @@ class VentaController extends Controller
 
         //</editor-fold>
 
-        //<editor-fold desc="Arqueo">
+        //<editor-fold desc="Arqueo del Día">
 
 
         $arqueo = DB::table('arqueo')
@@ -815,6 +823,36 @@ class VentaController extends Controller
         array_unshift($arqueocol,$filaarqueo0);
 
         //</editor-fold>
+
+        $balance =  DB::table('balance')->first();
+        if($balance == null){
+            $start = Carbon::now()->startOfMonth()->format("Y-m-d");
+            $balance = (object) ['fecha' => $start];
+        }
+
+        //<editor-fold desc="Pagos desde el Balance">
+        $pagoshastaelbalance = DB::table('pagos')
+            ->whereBetween('fecha', array($balance->fecha, $today))
+            ->sum('monto');
+
+        //</editor-fold>
+
+        //<editor-fold desc="Arqueo desde el Balance">
+
+
+        $arqueohastaelbalance = DB::table('arqueo')
+            ->whereBetween('fecha', array($balance->fecha, $today))
+            ->sum('monto');
+        //</editor-fold>
+
+
+        //<editor-fold desc="Ventas desde el Balance">
+        $ventashastaayer = DB::table('venta as v')
+            ->where('v.fecha_hora','>',$balance->fecha)
+            ->sum('total_venta');
+
+        //</editor-fold>
+
 
 
         $aux = DB::table('articulo as a')
@@ -874,9 +912,9 @@ class VentaController extends Controller
         array_push($columna,$filanueva);
         //dd($columna);
 
-        Excel::create('Caja ' . $mytime->format('Y-m-d'), function ($excel) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo) {
+        Excel::create('Caja ' . $mytime->format('Y-m-d'), function ($excel) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo,$ventashastaayer, $pagoshastaelbalance, $arqueohastaelbalance) {
 
-            $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo) {
+            $excel->sheet('Excel sheet', function ($sheet) use ($columna, $subtotales, $pagoscol, $totalPago,$arqueocol,$totalArqueo,$ventashastaayer, $pagoshastaelbalance, $arqueohastaelbalance) {
                 $sheet->setAutoSize(true);
                 //$sheet->setBorder('A1:F10', 'thin');
                 $sheet->setOrientation('landscape');
@@ -887,7 +925,7 @@ class VentaController extends Controller
                     $turno = "Tarde";
                 }
                 $sheet->mergeCells('A1:F1');
-                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("d/m/Y");
+                $today = Carbon::now('America/Argentina/Buenos_Aires')->format("Y-m-d");
                 $row = 2;
                 $sheet->row($row, ['Fecha', $today, 'Turno', $turno , 'Vendedor', Auth::user()->name]);
                 $sheet->mergeCells('A3:F3');
@@ -1049,8 +1087,10 @@ class VentaController extends Controller
                 //</editor-fold>
 
                 $sheet->setBorder('A1:F'.$row, 'thin');
+
+                //<editor-fold desc="Cuadro Subtotales">
                 $row = $row + 3;
-                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->mergeCells('A'.$row.':B'.$row);
                 $sheet->cell('A'.$row, function($cell) {
 
                     $cell->setAlignment('center');
@@ -1066,14 +1106,23 @@ class VentaController extends Controller
                 $sheet->row($row+7, ['Cigarrillos',$subtotales[7]]);
                 $totalIngresos = number_format($columna[$i][3],2);
                 $sheet->row($row+9, ['Total',number_format($columna[$i][3],2)]);
+                //dd($row);
+                $rowFin = $row + 9;
+                $sheet->setBorder('A'.$row.':B'.$rowFin, 'thin');
 
+                //</editor-fold>
+
+
+                //<editor-fold desc="Cuadro Pagos">
                 $row = $row +11;
-                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->mergeCells('A'.$row.':B'.$row);
                 $sheet->cell('A'.$row, function($cell) {
                     $cell->setAlignment('center');
-
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(16);
                 });
                 $sheet->row($row, ['Pagos']);
+                $rowInicioPago = $row;
                 $row = $row +1;
                 $aux = 0;
                 for($i = 0; count($pagoscol)> $i; $i++){
@@ -1082,9 +1131,15 @@ class VentaController extends Controller
                 }
                 $row = $row + $aux;
                 $sheet->row($row+1, ['Total Pagos',number_format($totalPago,2)]);
+                $rowFin = $row + 1;
+                $sheet->setBorder('A'.$rowInicioPago.':B'.$rowFin, 'thin');
+                //</editor-fold>
 
+
+                //<editor-fold desc="Cuadro Arqueo">
                 $row = $row +3;
-                $sheet->mergeCells('A'.$row.':F'.$row);
+                $rowInicioArqueo = $row;
+                $sheet->mergeCells('A'.$row.':B'.$row);
                 $sheet->cell('A'.$row, function($cell) {
                     $cell->setAlignment('center');
 
@@ -1098,7 +1153,11 @@ class VentaController extends Controller
                 }
                 $row = $row + $aux;
                 $sheet->row($row+1, ['Total Arqueo',number_format($totalArqueo,2)]);
+                $rowFin = $row +1;
+                $sheet->setBorder('A'.$rowInicioArqueo.':B'.$rowFin, 'thin');
+                //</editor-fold>
 
+                //<editor-fold desc="Cuadro Caja Del Día">
                 $row = $row + 3;
                 $sheet->mergeCells('A'.$row.':F'.$row);
                 $sheet->cell('A'.$row, function($cell) {
@@ -1108,6 +1167,24 @@ class VentaController extends Controller
                 $sheet->row($row, ['Caja del día']);
                 $intV = intval(str_replace(",","",$totalIngresos));
                 $sheet->row($row+2, ['Total: ',$intV+$totalArqueo-$totalPago]);
+
+                //</editor-fold>
+
+                //<editor-fold desc="Cuadro Caja Del Día Con Saldo Anterior">
+                $row = $row + 7;
+                $sheet->mergeCells('A'.$row.':F'.$row);
+                $sheet->cell('A'.$row, function($cell) {
+                    $cell->setAlignment('center');
+
+                });
+                $sheet->row($row, ['Caja del día Con Saldo Anterior']);
+                //$intV = intval(str_replace(",","",$totalIngresos));
+                $intV2 = intval(str_replace(",","",$ventashastaayer));
+                $intV3 = intval(str_replace(",","",$arqueohastaelbalance));
+                $intV4 = intval(str_replace(",","",$pagoshastaelbalance));
+                $sheet->row($row+2, ['Total: ',$intV2+$intV3-$intV4]);
+
+                //</editor-fold>
 
             });
 

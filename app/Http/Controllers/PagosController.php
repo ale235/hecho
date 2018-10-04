@@ -111,12 +111,4 @@ class PagosController extends Controller
         return Redirect::to('pagos');
     }
 
-    public function autocomplete(Request $request)
-    {
-        $data = Pagos::select('descripcion')
-            ->where('descripcion','LIKE','%'.$request->get('query').'%')
-            ->distinct()
-            ->get();
-        return response()->json($data);
-    }
 }

@@ -80,6 +80,7 @@ class ArticuloController extends Controller
         try
         {
         DB::beginTransaction();
+        dd($request);
         $articulo = new Articulo;
             if(Articulo::where('barcode',$request->get('barcode'))->exists()){
                 $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
@@ -129,7 +130,6 @@ class ArticuloController extends Controller
                 $articulo->update();
             }
             else{
-                dd(1);
                 $ultimo =Articulo::orderBy('idarticulo','desc')->first();
                 $articulo->idcategoria = $request->get('idcategoria');
                 //dd($request);
@@ -209,7 +209,6 @@ class ArticuloController extends Controller
 //
 //            DB::beginTransaction();
             if(count(Articulo::where('barcode',$request->get('barcode'))->first())==1){
-                dd(1);
                 $articulo = Articulo::where('barcode','=',$request->get('barcode'))->firstOrFail();
                 $articulo->idcategoria = $request->get('idcategoria');
                 $articulo->codigo =$request->get('codigo');
@@ -472,7 +471,7 @@ class ArticuloController extends Controller
 
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
-        $p=DB::table('persona as p')->select('p.idpersona','p.codigo')->where('p.codigo','=', $request->codigo)->get();
+        $p=DB::table('persona as p')->select('p.idpersona','p.codigo')->where('p.idpersona','=', $request->idpersona)->get();
         return response()->json($p);
     }
 
@@ -493,14 +492,14 @@ class ArticuloController extends Controller
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
         $p=DB::table('articulo as art')
-            ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','p.precio_compra','person.idpersona','person.codigo')
+            ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','p.precio_compra','person.idpersona','person.codigo as codigo_persona')
             ->join('persona as person','art.proveedor','=','person.codigo')
             ->join('precio as p', 'art.idarticulo','=','p.idarticulo')
             ->where('art.barcode','=', $request->barcode)
             ->orwhere('art.codigo','=', $request->barcode)
             ->orderBy('p.idprecio','desc')
             ->first();
-            return response()->json($p);
+        return response()->json($p);
     }
 
     public function getPorCodigo()
