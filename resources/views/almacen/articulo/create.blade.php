@@ -21,7 +21,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
                 <input  type="number" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
-                <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
+                <input type="text" name="codigo" id="codigo" style="display: none" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
                 <div class="input-group-btn">
                     <label class="switch">
                         <input id="toogle-switch" type="checkbox" checked>
@@ -48,6 +48,7 @@
                         <span class="input-group-btn">
                         <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
                     </span>
+                        <input type="hidden" name="idcategoriasolo" id="idcategoriasolo" value="{{old('idcategoriasolo')}}">
                     </div>
                 </div>
                 <br>
@@ -69,6 +70,19 @@
                     </div>
                 </div>
                 <br>
+
+                <div class="input-group">
+                    <img id="imagen-thumb" class="img-thumbnail img-responsive" height="25%" width="25%"  />
+                </div>
+                <br>
+
+                <div class="input-group" id="imagen-module">
+                    <span class="input-group-addon"><i class="fa fa-image"></i></span>
+                    <input type="file" name="imagen" id="imagen" class="form-control" placeholder="Ingresá la imagen">
+                    <span class="input-group-addon">Imagen del Artículo</span>
+                    <br>
+                </div>
+
                 <hr size="60" />
 
                 <div class="input-group">
@@ -156,7 +170,9 @@
                         $('#codigo').attr('readonly', true);
                         $("#codigo").val(data.codigo);
                         $('#nombre').val(data.nombre);
+                        $('#barcode').val(data.barcode);
                         $("#idcategoria").val(data.idcategoria);
+                        $("#idcategoriasolo").val(data.idcategoria);
                         $("#idproveedores").val(data.idpersona);
                         $("#idcategoria").attr('disabled', 'disabled');
                         $("#idproveedores").attr('disabled', 'disabled');
@@ -167,6 +183,9 @@
                         $('#pprecio_venta_esperado').val(data.precio_venta);
                         $('#idproveedorsolo').val(data.idpersona);
                         $("#idproveedor").val(data.proveedor);
+                        var res = '{{asset('imagenes/articulos')}}'.concat('/'+data.imagen);
+                        $("#imagen-thumb").attr('src',res);
+                        $("#imagen-module").css('display','none');
                     }
 
                 },
