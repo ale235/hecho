@@ -22,6 +22,7 @@
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
                 <input  type="number" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
                 <input type="text" name="codigo" id="codigo" style="display: none" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
+                <input type="text" name="atajo" id="atajo" style="display: none" value="{{old('atajo')}}" class="form-control"  placeholder="Atajo del producto...">
                 <div class="input-group-btn">
                     <label class="switch">
                         <input id="toogle-switch" type="checkbox" checked>
@@ -126,6 +127,9 @@
 @endsection
 
 @push ('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js">
+
+</script>
 <script>
     $("#barcode").keypress(function(event){
         if (event.which == '10' || event.which == '13') {
@@ -138,21 +142,31 @@
         }
     });
 
+//    $('#codigo').mask('AAA000');
+    $('#codigo').mask('AAAAAYYYYY', {'translation': {
+        A: {pattern: /[A-Za-z]/},
+        Y: {pattern: /[0-9]/}
+    }
+    }).cleanVal();
+
+
     $(document).ready(function () {
         $(document).on('change','#toogle-switch',function(){
             if ($('#toogle-switch').is(':checked')) {
                 $('#toogle-switch').attr('checked',true);
                 $('#barcode').css('display','block');
                 $('#codigo').css('display','none');
+                $('#atajo').css('display','none');
             } else {
                 $('#toogle-switch').attr('checked',false);
                 $('#barcode').css('display','none');
                 $('#codigo').css('display','block');
+                $('#atajo').css('display','block');
             }
 
         });
 
-        $(document).on('change','#barcode,#codigo',function(){
+        $(document).on('change','#barcode,#codigo,#atajo',function(){
             var cat_id=$(this).val();
             $.ajax({
                 type:'get',
