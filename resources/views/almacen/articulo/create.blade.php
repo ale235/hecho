@@ -18,19 +18,52 @@
         {!! Form::open(array('url'=>'almacen/articulo', 'method'=>'POST', 'autocomplete'=>'off', 'files'=>'true', 'novalidate' => 'novalidate'))!!}
         {{Form::token()}}
         <div class="box box-body">
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                <input  type="number" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control" placeholder="Código de Barras">
-                <input type="text" name="codigo" id="codigo" style="display: none" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
-                <input type="text" name="atajo" id="atajo" style="display: none" value="{{old('atajo')}}" class="form-control"  placeholder="Atajo del producto...">
-                <div class="input-group-btn">
-                    <label class="switch">
-                        <input id="toogle-switch" type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
+            <div class="zero-part-form col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-addon barcode"><i class="fa fa-barcode"></i></span>
+                    <input  type="number" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control barcode" placeholder="Código de Barras">
                 </div>
             </div>
-            <br>
+
+            <div class="first-part-form col-lg-10" style="display: none">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                    <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
+                </div>
+                <br>
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                    <input type="text" name="atajo" id="atajo" value="{{old('atajo')}}" class="form-control"  placeholder="Atajo del producto...">
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Proveedor</span>
+                        <select name="idproveedores" id="idproveedores"  class="form-control">
+                            <option selected>Seleccione el Proveedor</option>
+                            @foreach($proveedores as $prov)
+                                <option value="{{$prov->idpersona}}">{{$prov->codigo}}</option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
+                        <input type="hidden" name="idproveedor" id="idproveedor" value="{{old('idproveedor')}}">
+                        <span class="input-group-btn">
+                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
+                    </span>
+                    </div>
+                </div>
+                <br>
+            </div>
+
+            <div class="switch-form col-lg-2 pull-right">
+                <label class="switch">
+                    <input id="toogle-switch" type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
             <div class="second-part-form" style="display: none">
                 <div class="input-group">
                     <span class="input-group-addon">Nombre</span>
@@ -50,24 +83,6 @@
                         <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
                     </span>
                         <input type="hidden" name="idcategoriasolo" id="idcategoriasolo" value="{{old('idcategoriasolo')}}">
-                    </div>
-                </div>
-                <br>
-
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon">Proveedor</span>
-                        <select name="idproveedores" id="idproveedores"  class="form-control">
-                            <option selected>Seleccione el Proveedor</option>
-                            @foreach($proveedores as $prov)
-                                <option value="{{$prov->idpersona}}">{{$prov->codigo}}</option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
-                        <input type="hidden" name="idproveedor" id="idproveedor" value="{{old('idproveedor')}}">
-                        <span class="input-group-btn">
-                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
-                    </span>
                     </div>
                 </div>
                 <br>
@@ -154,14 +169,16 @@
         $(document).on('change','#toogle-switch',function(){
             if ($('#toogle-switch').is(':checked')) {
                 $('#toogle-switch').attr('checked',true);
-                $('#barcode').css('display','block');
-                $('#codigo').css('display','none');
-                $('#atajo').css('display','none');
+                $('.barcode').css('display','block');
+//                $('#codigo').css('display','none');
+//                $('#atajo').css('display','none');
+                $('.first-part-form').css('display','none');
             } else {
                 $('#toogle-switch').attr('checked',false);
-                $('#barcode').css('display','none');
-                $('#codigo').css('display','block');
-                $('#atajo').css('display','block');
+                $('.barcode').css('display','none');
+//                $('#codigo').css('display','block');
+//                $('#atajo').css('display','block');
+                $('.first-part-form').css('display','block');
             }
 
         });
@@ -298,7 +315,7 @@
         display: inline-block;
         width: 60px;
         height: 34px;
-        margin: -7px 3px -7px 0px;
+        /*margin: -7px 3px -7px 0px;*/
     }
 
     /* Hide default HTML checkbox */
