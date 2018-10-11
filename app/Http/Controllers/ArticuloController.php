@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Input;
 use ideas\Http\Requests\ArticuloFormRequest;
 use ideas\Http\Requests\ArticuloFormRequest2;
 use ideas\Articulo;
+use ideas\Articulos_Proveedores;
 use ideas\Persona;
 use ideas\Precio;
 use ideas\Ingreso;
@@ -46,7 +47,7 @@ class ArticuloController extends Controller
             else $query3 = trim($request->get('selectText'));
             $articulos = DB::table('articulo as art')
                 ->join('categoria as cat', 'art.idcategoria', '=', 'cat.idcategoria')
-                ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'cat.nombre as categoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode')
+                ->select('art.idarticulo','art.nombre', 'art.stock', 'cat.nombre as categoria', 'art.descripcion', 'art.imagen', 'art.estado','art.ultimoprecio', 'art.barcode')
                 ->where('art.estado','=',$query3)
                 ->where([
                     ['art.nombre','LIKE','%'.$query.'%'],
@@ -62,19 +63,19 @@ class ArticuloController extends Controller
 
     public function create()
     {
-        $articulos = DB::table('articulo as art')
-            ->select('art.idarticulo','art.codigo','art.proveedor')
-            ->get();
+//        $articulos = DB::table('articulo as art')
+//            ->select('art.idarticulo','art.codigo','art.proveedor')
+//            ->get();
 
 
-        $proveedores = DB::table('persona')
-            ->where('tipo_persona','=','Proveedor')
+        $proveedores = DB::table('proveedor')
+//            ->where('tipo_persona','=','Proveedor')
             ->where('estado','=','Activo')
             ->get();
         $categorias=DB::table('categoria')
             ->where('condicion','=','1')
             ->get();
-        return view('almacen.articulo.create', ['categorias'=>$categorias, 'proveedores'=>$proveedores, 'articulos'=>$articulos]);
+        return view('almacen.articulo.create', ['categorias'=>$categorias, 'proveedores'=>$proveedores]);
     }
 
     public function store(ArticuloFormRequest $request)
@@ -82,7 +83,7 @@ class ArticuloController extends Controller
 //        try
 //        {
 //        DB::beginTransaction();
-
+//        dd($request);
         //Creamos el artículo que vamos a usar para la alta o modificación.
         $articulo = new Articulo;
 
@@ -92,7 +93,7 @@ class ArticuloController extends Controller
 
             //Ingresamos las nuevas cantidades al Stock.
             $ingreso = new Ingreso;
-            $ingreso->idproveedor = $request->get('idproveedorsolo');
+            $ingreso->idproveedor = $request->get('idproveedores');
             $mytime= Carbon::now('America/Argentina/Buenos_Aires');
             $ingreso->fecha_hora=$mytime->toDateTimeString();
             $ingreso->estado='Activo';
@@ -129,24 +130,14 @@ class ArticuloController extends Controller
         }
         else{
 
-            $ultimo =Articulo::orderBy('idarticulo','desc')->first();
             $articulo->idcategoria = $request->get('idcategoria');
-
-            $numero = Articulo::where('proveedor',$request->get('idproveedor'))->orderBy('codigo','desc')->first();
-            if($numero){
-                $ultimoNumeroCodigo = substr($numero->codigo, -5);
-                $ultimoNumeroCodigo = (int)$ultimoNumeroCodigo;
-            }
-            else $ultimoNumeroCodigo = 0;
-
-            $articulo->codigo = $request->get('idproveedor') . str_pad($ultimoNumeroCodigo+1, 5, "0",  STR_PAD_LEFT);
-            $articulo->proveedor = $request->get('idproveedor');
             $articulo->nombre = $request->get('nombre');
             $articulo->stock = 0;
-            $articulo->descripcion = $request->get('descripcion');
             $articulo->estado = 'Activo';
-            if($request->get('barcode')== '')
-                $articulo->barcode = $ultimo->idarticulo + 1;
+            if($request->get('barcode')== ''){
+                $ultimo =Articulo::orderBy('idarticulo','desc')->first();
+                $articulo->barcode = str_pad($ultimo->idcategoria, 5, "0",  STR_PAD_LEFT) . str_pad($ultimo->idarticulo + 1, 8, "0",  STR_PAD_LEFT);
+            }
             else $articulo->barcode = $request->get('barcode');
 
             if(Input::hasFile('imagen'))
@@ -157,11 +148,20 @@ class ArticuloController extends Controller
                 //dd($articulo->imagen);
             }
             $articulo->save();
+            
+            $articulos_proveedores = new Articulos_Proveedores([
+                'idarticulo' => $articulo->idarticulo,
+                'idproveedor' => $request->get('idproveedores'),
+                'updated_at' => Carbon::now(), //date('Y-m-d G:i:s') DB::raw('NOW()')
+                'created_at' => Carbon::now()  //date('Y-m-d G:i:s') DB::raw('NOW()')
+            ]);
+            $articulos_proveedores->save();
+
 
             $ingreso = new Ingreso;
 //        $pieces = explode("+", $request->get('idproveedor'));
 //        $ingreso->idproveedor = $pieces[0];
-            $ingreso->idproveedor = $request->get('idproveedorsolo');
+            $ingreso->idproveedor = $request->get('idproveedores');
             $mytime= Carbon::now('America/Argentina/Buenos_Aires');
 
             $ingreso->fecha_hora=$mytime->toDateTimeString();
@@ -267,12 +267,6 @@ class ArticuloController extends Controller
         $articulo->delete();
 
         return Redirect::to('almacen/articulo');
-    }
-
-    public static  function test()
-    {
-
-        return "hola";
     }
 
     public function prodfunct(){
@@ -383,11 +377,10 @@ class ArticuloController extends Controller
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
         $p=DB::table('articulo as art')
-            ->select('art.idarticulo','art.nombre', 'art.codigo', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado', 'art.proveedor','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','p.precio_compra','person.idpersona','person.codigo as codigo_persona','art.imagen')
-            ->join('persona as person','art.proveedor','=','person.codigo')
+            ->select('art.idarticulo','art.nombre', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','art.imagen')
+            //->join('persona as person','art.proveedor','=','person.codigo')
             ->join('precio as p', 'art.idarticulo','=','p.idarticulo')
             ->where('art.barcode','=', $request->barcode)
-            ->orwhere('art.codigo','=', $request->barcode)
             ->orderBy('p.idprecio','desc')
             ->first();
         return response()->json($p);

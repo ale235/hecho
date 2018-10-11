@@ -25,7 +25,6 @@ class ArticuloFormRequest extends FormRequest
     {
         return [
             //'idcategoria'=>'required',
-            'codigo'=>'required|max:50',
             'nombre'=>'required|max:100',
 //            'stock'=>'required|numeric',
             'pporcentaje_venta'=>'required|numeric',

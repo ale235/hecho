@@ -23,32 +23,28 @@
                     <span class="input-group-addon barcode"><i class="fa fa-barcode"></i></span>
                     <input  type="number" name="barcode" id="barcode" value="{{old('barcode')}}"  class="form-control barcode" placeholder="Código de Barras">
                 </div>
-                <br>
             </div>
 
             <div class="first-part-form col-xs-12 col-sm-6 col-md-4 col-lg-10" style="display: none">
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon">Proveedor</span>
-                        <select name="idproveedores" id="idproveedores"  class="form-control">
-                            <option selected>Seleccione el Proveedor</option>
-                            @foreach($proveedores as $prov)
-                                <option value="{{$prov->idpersona}}">{{$prov->codigo}}</option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" name="idproveedorsolo" id="idproveedorsolo" value="{{old('idproveedorsolo')}}">
-                        <input type="hidden" name="idproveedor" id="idproveedor" value="{{old('idproveedor')}}">
-                        <span class="input-group-btn">
-                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
-                    </span>
-                    </div>
+
+                <div class="space-align" style="display: none;">
+                    <br>
                 </div>
 
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                    <input type="text" name="codigo" id="codigo" value="{{old('codigo')}}" class="form-control"  placeholder="Código del producto...">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Categoría</span>
+                        <select name="idcategoria" id="idcategoria" class="form-control">
+                            @foreach($categorias as $cat)
+                                <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
+                            @endforeach
+                        </select>
+                        <span class="input-group-btn">
+                        <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
+                    </span>
+                        {{--<input type="hidden" name="idcategoriasolo" id="idcategoriasolo" value="{{old('idcategoriasolo')}}">--}}
+                    </div>
                 </div>
-                <br>
 
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
@@ -69,6 +65,7 @@
             </div>
 
             <div class="second-part-form col-xs-12 col-sm-12 col-md-12 col-lg-12" style="display: none">
+
                 <div class="input-group">
                     <span class="input-group-addon">Nombre</span>
                     <input type="text" name="nombre" id="nombre" value="{{old('nombre')}}" class="form-control" placeholder="Nombre">
@@ -77,16 +74,16 @@
 
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon">Categoría</span>
-                        <select name="idcategoria" id="idcategoria" class="form-control">
-                            @foreach($categorias as $cat)
-                                <option value="{{$cat->idcategoria}}">{{$cat->nombre}}</option>
+                        <span class="input-group-addon">Proveedor</span>
+                        <select name="idproveedores" id="idproveedores"  class="form-control">
+                            <option selected>Seleccione el Proveedor</option>
+                            @foreach($proveedores as $prov)
+                                <option value="{{$prov->idproveedor}}">{{$prov->codigo}}</option>
                             @endforeach
                         </select>
                         <span class="input-group-btn">
-                        <a href="{{ url('almacen/categoria/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nueva Categoría</button></a>
+                        <a href="{{ url('compras/proveedor/create?lastPage=art') }}"><button type="button" class="btn btn-info btn-flat">Nuevo Proveedor</button></a>
                     </span>
-                        <input type="hidden" name="idcategoriasolo" id="idcategoriasolo" value="{{old('idcategoriasolo')}}">
                     </div>
                 </div>
                 <br>
@@ -174,108 +171,15 @@
             event.preventDefault();
         }
     });
-    $("#codigo").keypress(function(event){
-        if (event.which == '10' || event.which == '13') {
-            event.preventDefault();
-        }
-    });
+//    $("#codigo").keypress(function(event){
+//        if (event.which == '10' || event.which == '13') {
+//            event.preventDefault();
+//        }
+//    });
 
     var options =  {
         onComplete: function(cep) {
             var cat_id=cep;
-            console.log(cat_id);
-            $.ajax({
-                type:'get',
-                url:'{!!URL::to('existeArticulo')!!}',
-                data:{'barcode':cat_id},
-                success:function(data){
-                    //Si se activa este IF quiere decir que se va a EDITAR el artículo.
-                    if(!(Object.keys(data).length === 0 && data.constructor === Object)){
-
-                        //Controla que se muestre el resto del formulario.
-                        $('.second-part-form').css('display','block');
-                        $('.switch').css('display','none');
-
-                        $('#barcode').attr('readonly', true);
-                        $('#nombre').attr('readonly', true);
-                        $('#codigo').attr('readonly', true);
-                        $("#codigo").val(data.codigo);
-                        $('#nombre').val(data.nombre);
-                        $('#barcode').val(data.barcode);
-                        $("#idcategoria").val(data.idcategoria);
-                        $("#idcategoriasolo").val(data.idcategoria);
-                        $("#idproveedores").val(data.idpersona);
-                        $("#idcategoria").attr('disabled', 'disabled');
-                        $("#idproveedores").attr('disabled', 'disabled');
-                        $("#existencia").text(data.stock);
-                        $("#inputdelexistencia").show();
-                        $('#pprecio_compra_costo').val(data.precio_compra);
-                        $('#pporcentaje_venta').val(data.porcentaje);
-                        $('#pprecio_venta_esperado').val(data.precio_venta);
-                        $('#idproveedorsolo').val(data.idpersona);
-                        $("#idproveedor").val(data.proveedor);
-                        var res = '{{asset('imagenes/articulos')}}'.concat('/'+data.imagen);
-                        $("#imagen-thumb").attr('src',res);
-                        $("#imagen-module").css('display','none');
-
-                        $($('#codigo').parent()).addClass('has-success');
-                        $($('#barcode').parent()).addClass('has-success');
-                        $($('#codigo').parent()).removeClass('has-error');
-                        $($('#idcategoria').parent()).addClass('has-success');
-                        $($('#idproveedores').parent()).addClass('has-success');
-                        $($('#nombre').parent()).addClass('has-success');
-                    }
-                    else{
-//                        $('#codigo').val('');
-//                        $($('#codigo').parent()).removeClass('has-error');
-//                        $('#modal-default').modal("show");
-                    }
-
-                },
-                error:function(){
-                    console.log("aca");
-                }
-            });
-        },
-        onKeyPress: function(cep, event, currentField, options){
-            console.log('A key was pressed!:', cep, ' event: ', event,
-                'currentField: ', currentField, ' options: ', options);
-        },
-        onChange: function(cep){
-            $($('#codigo').parent()).addClass('has-error');
-        },
-        onInvalid: function(val, e, f, invalid, options){
-            var error = invalid[0];
-            console.log ("Digit: ", error.v, " is invalid for the position: ", error.p, ". We expect something like: ", error.e);
-        },
-        translation: {
-            'A': {pattern: /[A-Za-z]/},
-            'Y': {pattern: /[0-9]/}
-        }
-    };
-    $('#codigo').mask('AAAAAYYYYY', options);
-
-
-    $(document).ready(function () {
-        $(document).on('change','#toogle-switch',function(){
-            if ($('#toogle-switch').is(':checked')) {
-                $('#toogle-switch').attr('checked',true);
-                $('.barcode').css('display','');
-//                $('#codigo').css('display','none');
-//                $('#atajo').css('display','none');
-                $('.first-part-form').css('display','none');
-            } else {
-                $('#toogle-switch').attr('checked',false);
-                $('.barcode').css('display','none');
-//                $('#codigo').css('display','block');
-//                $('#atajo').css('display','block');
-                $('.first-part-form').css('display','block');
-            }
-
-        });
-
-        $(document).on('change','#barcode,#atajo',function(){
-            var cat_id=$(this).val();
             $.ajax({
                 type:'get',
                 url:'{!!URL::to('existeArticulo')!!}',
@@ -289,8 +193,8 @@
                     if(!(Object.keys(data).length === 0 && data.constructor === Object)){
                         $('#barcode').attr('readonly', true);
                         $('#nombre').attr('readonly', true);
-                        $('#codigo').attr('readonly', true);
-                        $("#codigo").val(data.codigo);
+//                        $('#codigo').attr('readonly', true);
+//                        $("#codigo").val(data.codigo);
                         $('#nombre').val(data.nombre);
                         $('#barcode').val(data.barcode);
                         $("#idcategoria").val(data.idcategoria);
@@ -303,14 +207,113 @@
                         $('#pprecio_compra_costo').val(data.precio_compra);
                         $('#pporcentaje_venta').val(data.porcentaje);
                         $('#pprecio_venta_esperado').val(data.precio_venta);
-                        $('#idproveedorsolo').val(data.idpersona);
+                        $('#idproveedorsolo').val(data.idproveedor);
+                        $("#idproveedor").val(data.idproveedor);
+                        var res = '{{asset('imagenes/articulos')}}'.concat('/'+data.imagen);
+                        $("#imagen-thumb").attr('src',res);
+                        $("#imagen-module").css('display','none');
+
+//                        $($('#codigo').parent()).addClass('has-success');
+                        $($('#barcode').parent()).addClass('has-success');
+                        $($('#idcategoria').parent()).addClass('has-success');
+                        $($('#idproveedores').parent()).addClass('has-success');
+                        $($('#nombre').parent()).addClass('has-success');
+                        $($('#pporcentaje_venta').parent()).addClass('has-success');
+                        $($('#pprecio_compra_costo').parent()).addClass('has-success');
+//                        $($('#nombre').parent()).addClass('has-success');
+//                        $($('#idcategoria').parent()).addClass('has-success');
+
+
+                    }
+
+                },
+                error:function(){
+                    console.log("aca");
+                }
+            });
+        },
+        onKeyPress: function(cep, event, currentField, options){
+            console.log('A key was pressed!:', cep, ' event: ', event,
+                'currentField: ', currentField, ' options: ', options);
+        },
+        onChange: function(cep){
+//            $($('#codigo').parent()).addClass('has-error');
+        },
+        onInvalid: function(val, e, f, invalid, options){
+            var error = invalid[0];
+            console.log ("Digit: ", error.v, " is invalid for the position: ", error.p, ". We expect something like: ", error.e);
+        },
+        translation: {
+            'A': {pattern: /[A-Za-z]/},
+            'Y': {pattern: /[0-9]/}
+        }
+    };
+    //$('#barcode').mask('YYYYYYYYYYYYYY', options);
+    $('#atajo').mask('AAYYY', options);
+
+
+    $(document).ready(function () {
+        $(document).on('change','#toogle-switch',function(){
+            if ($('#toogle-switch').is(':checked')) {
+                $('#toogle-switch').attr('checked',true);
+                $('#barcode').parent().removeClass('has-success');
+                $('.barcode').css('display','');
+//                $('#codigo').css('display','none');
+//                $('#atajo').css('display','none');
+                $('.first-part-form').css('display','none');
+            } else {
+                $('#toogle-switch').attr('checked',false);
+                $('.barcode').css('display','none');
+//                $('#codigo').css('display','block');
+//                $('#atajo').css('display','block');
+                $('.first-part-form').css('display','block');
+                $('.second-part-form').css('display','block');
+                $('#barcode').val('');
+                $('#barcode').parent().addClass('has-success');
+                $('#idcategoria').parent().addClass('has-success');
+            }
+
+        });
+
+        $(document).on('change','#barcode',function(){
+            var cat_id=$(this).val();
+            $.ajax({
+                type:'get',
+                url:'{!!URL::to('existeArticulo')!!}',
+                data:{'barcode':cat_id},
+                success:function(data){
+                    //Controla que se muestre el resto del formulario.
+                    $('.space-align').css('display','block');
+                    $('.first-part-form').css('display','block');
+                    $('.second-part-form').css('display','block');
+                    $('.switch').css('display','none');
+                    $($('#barcode').parent()).addClass('has-success');
+                    $($('#idcategoria').parent()).addClass('has-success');
+                    //Si se activa este IF quiere decir que se va a EDITAR el artículo.
+                    if(!(Object.keys(data).length === 0 && data.constructor === Object)){
+                        $('#barcode').attr('readonly', true);
+                        $('#nombre').attr('readonly', true);
+                        $('#codigo').attr('readonly', true);
+                        $("#codigo").val(data.codigo);
+                        $('#nombre').val(data.nombre);
+                        $('#barcode').val(data.barcode);
+                        $("#idcategoria").val(data.idcategoria);
+                        $("#idcategoriasolo").val(data.idcategoria);
+                        $("#idproveedores").val(data.idproveedor);
+                        $("#idcategoria").attr('disabled', 'disabled');
+                        $("#idproveedores").attr('disabled', 'disabled');
+                        $("#existencia").text(data.stock);
+                        $("#inputdelexistencia").show();
+                        $('#pprecio_compra_costo').val(data.precio_compra);
+                        $('#pporcentaje_venta').val(data.porcentaje);
+                        $('#pprecio_venta_esperado').val(data.precio_venta);
+                        $('#idproveedorsolo').val(data.idproveedor);
                         $("#idproveedor").val(data.proveedor);
                         var res = '{{asset('imagenes/articulos')}}'.concat('/'+data.imagen);
                         $("#imagen-thumb").attr('src',res);
                         $("#imagen-module").css('display','none');
 
                         $($('#codigo').parent()).addClass('has-success');
-                        $($('#barcode').parent()).addClass('has-success');
                         $($('#idcategoria').parent()).addClass('has-success');
                         $($('#idproveedores').parent()).addClass('has-success');
                         $($('#nombre').parent()).addClass('has-success');
@@ -329,67 +332,63 @@
             });
 
         });
-//
-//        $(document).on('change','#codigo',function(){
-//            var cod = $('#idproveedores').val()+$('#codigo').val();
-//            for(var i = 0; i<art.length;i++){
-//                if(art[i].codigo == cod){
-//                    alert('El código ya existe');
-//                    $('#codigo').val(' ');
-//                }
-//            }
-//
-//        });
+
         $(document).on('change','#idproveedores',function(){
 
-            var cat_id=$(this).val();
+            //var cat_id=$(this).val();
             var cat_text=$("#idproveedores option:selected").text();
-            $.ajax({
-                type:'get',
-                url:'{!!URL::to('buscarProveedor')!!}',
-                data:{'idpersona':cat_id},
-                success:function(data){
-                    $('#idproveedorsolo').val(data[0].idpersona);
-                    $('#idproveedor').val(data[0].codigo)
+            $('#idproveedorsolo').val(cat_text);
+//            $('#idproveedor').val(data[0].codigo)
+            {{--$.ajax({--}}
+                {{--type:'get',--}}
+                {{--url:'{!!URL::to('buscarProveedor')!!}',--}}
+                {{--data:{'idpersona':cat_id},--}}
+                {{--success:function(data){--}}
+                    {{--$('#idproveedorsolo').val(data[0].idpersona);--}}
+                    {{--$('#idproveedor').val(data[0].codigo)--}}
 
-                },
-                error:function(){
+                {{--},--}}
+                {{--error:function(){--}}
 
-                }
-            });
-            $.ajax({
-                type:'get',
-                url:'{!!URL::to('buscarUltimoId')!!}',
-                data:{'codigo':cat_text},
-                success:function(data){
-                    if (data.codigo == null) {
-                        var d = ajustar(5, 1);
-                        $('#codigo').val(d);
-                    }
-                    else {
-                        var a = data.codigo.substr(data.codigo.length - 5);
-                        var a2 = $('#idproveedor').val();
-                        var b = parseInt(a) + 1;
-                        var c = ajustar(5, b);
-                        $('#codigo').val(a2.concat(c));
-                        $('.second-part-form').css('display','block');
-                        $($('#codigo').parent()).addClass('has-success');
-                        $($('#barcode').parent()).addClass('has-success');
-                        $($('#codigo').parent()).removeClass('has-error');
-                        $($('#idcategoria').parent()).addClass('has-success');
-                        $($('#idproveedores').parent()).addClass('has-success');
-                        $($('#nombre').parent()).addClass('has-success');
-                    }
+                {{--}--}}
+            {{--});--}}
+            {{--$.ajax({--}}
+                {{--type:'get',--}}
+                {{--url:'{!!URL::to('buscarUltimoId')!!}',--}}
+                {{--data:{'codigo':cat_text},--}}
+                {{--success:function(data){--}}
+                    {{--if (data.codigo == null) {--}}
+                        {{--var d = ajustar(5, 1);--}}
+                        {{--$('#codigo').val(d);--}}
+                    {{--}--}}
+                    {{--else {--}}
+                        {{--var a = data.codigo.substr(data.codigo.length - 5);--}}
+                        {{--var a2 = $('#idproveedor').val();--}}
+                        {{--var b = parseInt(a) + 1;--}}
+                        {{--var c = ajustar(5, b);--}}
+                        {{--$('#codigo').val(a2.concat(c));--}}
+                        {{--$('.second-part-form').css('display','block');--}}
+                        {{--$($('#codigo').parent()).addClass('has-success');--}}
+                        {{--$($('#barcode').parent()).addClass('has-success');--}}
+                        {{--$($('#codigo').parent()).removeClass('has-error');--}}
+                        {{--$($('#idcategoria').parent()).addClass('has-success');--}}
+                        {{--$($('#idproveedores').parent()).addClass('has-success');--}}
+                        {{--$($('#nombre').parent()).addClass('has-success');--}}
+                    {{--}--}}
 
-                },
-                error:function(){
+                {{--},--}}
+                {{--error:function(){--}}
 
-                }
-            });
+                {{--}--}}
+            {{--});--}}
 
         });
 
         $(document).on('change','#pcantidad,#pprecio_compra_costo,#pporcentaje_venta',function(){
+            //$($('#codigo').parent()).addClass('has-success');
+            $(this).parent().addClass('has-success');
+        });
+        $(document).on('change','#idcategoria,#nombre,#idproveedores',function(){
             //$($('#codigo').parent()).addClass('has-success');
             $(this).parent().addClass('has-success');
         });
@@ -421,7 +420,7 @@
     }
 
     $( "#form-articulo" ).submit(function( event ) {
-        if(!($($('#codigo').parent()).hasClass('has-success') &&
+        if(!(
             $($('#barcode').parent()).hasClass('has-success') &&
             $($('#nombre').parent()).hasClass('has-success') &&
             $($('#idcategoria').parent()).hasClass('has-success') &&

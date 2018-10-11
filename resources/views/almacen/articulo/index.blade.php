@@ -36,7 +36,7 @@
                         @if (Auth::user()->role == 1)
                             <th>Stock</th>
                         @endif
-                        <th>Codigo</th>
+                        {{--<th>Codigo</th>--}}
                         <th>Precio</th>
                         <th>Categoría</th>
                         <th>Estado</th>
@@ -49,7 +49,7 @@
                                 @if (Auth::user()->role == 1)
                                     <th>{{$art->stock}}</th>
                                 @endif
-                                <td>{{$art->codigo}}</td>
+                                {{--<td>{{$art->codigo}}</td>--}}
                                 <td>{{$art->ultimoprecio}}</td>
                                 <td>{{$art->categoria}}</td>
                                 <td>{{$art->estado}}</td>
