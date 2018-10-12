@@ -231,13 +231,23 @@
                     console.log("aca");
                 }
             });
+            $('#atajo').parent().addClass('has-success');
+            $('#atajo').parent().removeClass('has-error');
+            console.log('lala');
         },
         onKeyPress: function(cep, event, currentField, options){
-            console.log('A key was pressed!:', cep, ' event: ', event,
-                'currentField: ', currentField, ' options: ', options);
+//            console.log('A key was pressed!:', cep, ' event: ', event,
+//                'currentField: ', currentField, ' options: ', options);
+//            $($('#atajo').parent()).addClass('has-error');
+            if(cep.localeCompare('') == 0){
+                $($('#atajo').parent()).removeClass('has-error');
+            }
         },
         onChange: function(cep){
-//            $($('#codigo').parent()).addClass('has-error');
+            $($('#atajo').parent()).addClass('has-error');
+            if(cep.localeCompare('') == 0){
+                $($('#atajo').parent()).removeClass('has-error');
+            }
         },
         onInvalid: function(val, e, f, invalid, options){
             var error = invalid[0];
@@ -388,9 +398,18 @@
             //$($('#codigo').parent()).addClass('has-success');
             $(this).parent().addClass('has-success');
         });
+
         $(document).on('change','#idcategoria,#nombre,#idproveedores',function(){
             //$($('#codigo').parent()).addClass('has-success');
             $(this).parent().addClass('has-success');
+        });
+
+        $(document).on('blur','#atajo',function(){
+            //$($('#codigo').parent()).addClass('has-success');
+            if($('#atajo').val().localeCompare('') == 0){
+                $($('#atajo').parent()).removeClass('has-error');
+                $($('#atajo').parent()).removeClass('has-success');
+            }
         });
 
     });
@@ -422,6 +441,7 @@
     $( "#form-articulo" ).submit(function( event ) {
         if(!(
             $($('#barcode').parent()).hasClass('has-success') &&
+            !($($('#atajo').parent()).hasClass('has-error')) &&
             $($('#nombre').parent()).hasClass('has-success') &&
             $($('#idcategoria').parent()).hasClass('has-success') &&
             $($('#nombre').parent()).hasClass('has-success') &&

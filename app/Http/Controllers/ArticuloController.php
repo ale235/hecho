@@ -148,7 +148,7 @@ class ArticuloController extends Controller
                 //dd($articulo->imagen);
             }
             $articulo->save();
-            
+
             $articulos_proveedores = new Articulos_Proveedores([
                 'idarticulo' => $articulo->idarticulo,
                 'idproveedor' => $request->get('idproveedores'),
@@ -159,8 +159,7 @@ class ArticuloController extends Controller
 
 
             $ingreso = new Ingreso;
-//        $pieces = explode("+", $request->get('idproveedor'));
-//        $ingreso->idproveedor = $pieces[0];
+
             $ingreso->idproveedor = $request->get('idproveedores');
             $mytime= Carbon::now('America/Argentina/Buenos_Aires');
 
