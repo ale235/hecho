@@ -171,11 +171,6 @@
             event.preventDefault();
         }
     });
-//    $("#codigo").keypress(function(event){
-//        if (event.which == '10' || event.which == '13') {
-//            event.preventDefault();
-//        }
-//    });
 
     var options =  {
         onComplete: function(cep) {
@@ -236,9 +231,6 @@
             console.log('lala');
         },
         onKeyPress: function(cep, event, currentField, options){
-//            console.log('A key was pressed!:', cep, ' event: ', event,
-//                'currentField: ', currentField, ' options: ', options);
-//            $($('#atajo').parent()).addClass('has-error');
             if(cep.localeCompare('') == 0){
                 $($('#atajo').parent()).removeClass('has-error');
             }
@@ -258,7 +250,6 @@
             'Y': {pattern: /[0-9]/}
         }
     };
-    //$('#barcode').mask('YYYYYYYYYYYYYY', options);
     $('#atajo').mask('AAYYY', options);
 
 
@@ -268,14 +259,10 @@
                 $('#toogle-switch').attr('checked',true);
                 $('#barcode').parent().removeClass('has-success');
                 $('.barcode').css('display','');
-//                $('#codigo').css('display','none');
-//                $('#atajo').css('display','none');
                 $('.first-part-form').css('display','none');
             } else {
                 $('#toogle-switch').attr('checked',false);
                 $('.barcode').css('display','none');
-//                $('#codigo').css('display','block');
-//                $('#atajo').css('display','block');
                 $('.first-part-form').css('display','block');
                 $('.second-part-form').css('display','block');
                 $('#barcode').val('');
@@ -329,10 +316,6 @@
                         $($('#nombre').parent()).addClass('has-success');
                         $($('#pporcentaje_venta').parent()).addClass('has-success');
                         $($('#pprecio_compra_costo').parent()).addClass('has-success');
-//                        $($('#nombre').parent()).addClass('has-success');
-//                        $($('#idcategoria').parent()).addClass('has-success');
-
-
                     }
 
                 },
@@ -344,58 +327,11 @@
         });
 
         $(document).on('change','#idproveedores',function(){
-
-            //var cat_id=$(this).val();
             var cat_text=$("#idproveedores option:selected").text();
             $('#idproveedorsolo').val(cat_text);
-//            $('#idproveedor').val(data[0].codigo)
-            {{--$.ajax({--}}
-                {{--type:'get',--}}
-                {{--url:'{!!URL::to('buscarProveedor')!!}',--}}
-                {{--data:{'idpersona':cat_id},--}}
-                {{--success:function(data){--}}
-                    {{--$('#idproveedorsolo').val(data[0].idpersona);--}}
-                    {{--$('#idproveedor').val(data[0].codigo)--}}
-
-                {{--},--}}
-                {{--error:function(){--}}
-
-                {{--}--}}
-            {{--});--}}
-            {{--$.ajax({--}}
-                {{--type:'get',--}}
-                {{--url:'{!!URL::to('buscarUltimoId')!!}',--}}
-                {{--data:{'codigo':cat_text},--}}
-                {{--success:function(data){--}}
-                    {{--if (data.codigo == null) {--}}
-                        {{--var d = ajustar(5, 1);--}}
-                        {{--$('#codigo').val(d);--}}
-                    {{--}--}}
-                    {{--else {--}}
-                        {{--var a = data.codigo.substr(data.codigo.length - 5);--}}
-                        {{--var a2 = $('#idproveedor').val();--}}
-                        {{--var b = parseInt(a) + 1;--}}
-                        {{--var c = ajustar(5, b);--}}
-                        {{--$('#codigo').val(a2.concat(c));--}}
-                        {{--$('.second-part-form').css('display','block');--}}
-                        {{--$($('#codigo').parent()).addClass('has-success');--}}
-                        {{--$($('#barcode').parent()).addClass('has-success');--}}
-                        {{--$($('#codigo').parent()).removeClass('has-error');--}}
-                        {{--$($('#idcategoria').parent()).addClass('has-success');--}}
-                        {{--$($('#idproveedores').parent()).addClass('has-success');--}}
-                        {{--$($('#nombre').parent()).addClass('has-success');--}}
-                    {{--}--}}
-
-                {{--},--}}
-                {{--error:function(){--}}
-
-                {{--}--}}
-            {{--});--}}
-
         });
 
         $(document).on('change','#pcantidad,#pprecio_compra_costo,#pporcentaje_venta',function(){
-            //$($('#codigo').parent()).addClass('has-success');
             $(this).parent().addClass('has-success');
         });
 
@@ -405,19 +341,59 @@
         });
 
         $(document).on('blur','#atajo',function(){
-            //$($('#codigo').parent()).addClass('has-success');
             if($('#atajo').val().localeCompare('') == 0){
                 $($('#atajo').parent()).removeClass('has-error');
                 $($('#atajo').parent()).removeClass('has-success');
             }
         });
 
+        var path ="{{ route('autocompleteMarcas') }}";
+        $("#pidarticulo").typeahead({
+            minLength: 3,
+            autoSelect: true,
+            dataType: 'json',
+            source: function (query, process) {
+
+                return $.get(path, {query:query}, function (data) {
+                    var nombres = data.map(function (item) {
+
+                        return item.codigo + ' ' + item.nombre
+                    });
+                    return process(nombres);
+                })
+            },
+            updater:function (item,data) {
+                console.log(item)
+                //item = selected item
+                var input = item.split(' ')
+
+                $.ajax({
+                    type:'get',
+                    url:'{!!URL::to('buscarPrecioArticuloVentasPorCodigo')!!}',
+                    data:{'codigo':input[0]},
+                    success:function(data){
+                        //console.log('success');
+
+                        console.log(data);
+
+                        $('#pprecio_venta').val(data[0].precio_venta);
+                        $('#pidarticulo').val(data.codigo);
+                        $('#pidarticuloidarticulo').val(data.idarticulo);
+                        $('#pidarticulonombre').val(data.nombre);
+
+                        $('#nombretemporal').text(data.nombre);
+
+                    },
+                    error:function(){
+
+                    }
+                });
+
+            }
+        });
+
     });
 
-    function ajustar(tam, num) {
-        if (num.toString().length < tam) return ajustar(tam, "0" + num)
-        else return num;
-    }
     function actualizar() {
         var a =  $('#pprecio_compra_costo').val();
         var b =  $('#pporcentaje_venta').val()/100 + 1;

@@ -63,13 +63,7 @@ class ArticuloController extends Controller
 
     public function create()
     {
-//        $articulos = DB::table('articulo as art')
-//            ->select('art.idarticulo','art.codigo','art.proveedor')
-//            ->get();
-
-
         $proveedores = DB::table('proveedor')
-//            ->where('tipo_persona','=','Proveedor')
             ->where('estado','=','Activo')
             ->get();
         $categorias=DB::table('categoria')
@@ -356,30 +350,16 @@ class ArticuloController extends Controller
         return response()->json($p);
     }
 
-    public function buscarUltimoId(Request $request){
-
-        //it will get price if its id match with product id
-        //$p=Product::select('price')->where('id',$request->id)->first();
-        do{
-            $p=DB::table('articulo as art')
-                ->select('art.codigo')
-                ->where('art.proveedor','=', $request->codigo)
-                ->orderBy('art.codigo','desc')
-                ->first();
-        }while(DB::table('articulo as art')->where('codigo','=', $p->codigo));
-
-        return response()->json($p);
-    }
-
     public function existeArticulo(Request $request){
 
         //it will get price if its id match with product id
         //$p=Product::select('price')->where('id',$request->id)->first();
         $p=DB::table('articulo as art')
-            ->select('art.idarticulo','art.nombre', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','art.imagen')
-            //->join('persona as person','art.proveedor','=','person.codigo')
+            ->select('art.idarticulo','art.nombre', 'art.stock', 'art.idcategoria', 'art.descripcion', 'art.imagen', 'art.estado','art.ultimoprecio', 'art.barcode','p.precio_venta','p.porcentaje','art.imagen','ap.idproveedor','p.precio_compra')
+            ->join('articulos_proveedores as ap','art.idarticulo','=','ap.idarticulo')
             ->join('precio as p', 'art.idarticulo','=','p.idarticulo')
             ->where('art.barcode','=', $request->barcode)
+            ->orderBy('ap.idproveedor','desc')
             ->orderBy('p.idprecio','desc')
             ->first();
         return response()->json($p);
