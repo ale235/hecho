@@ -24,14 +24,15 @@ class ArticuloFormRequest extends FormRequest
     public function rules()
     {
         return [
-            //'idcategoria'=>'required',
+            'idcategoria'=>'required',
+            'codigo'=>'required|max:50',
             'nombre'=>'required|max:100',
 //            'stock'=>'required|numeric',
             'pporcentaje_venta'=>'required|numeric',
             'pprecio_compra_costo'=>'required|numeric',
             'pcantidad'=>'required|numeric',
             'descripcion'=>'max:512',
-//            'imagen'=>'mimes:jpeg,bmp,png',
+            'imagen'=>'mimes:jpeg,bmp,png',
         ];
     }
 }
